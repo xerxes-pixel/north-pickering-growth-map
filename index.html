@@ -127,7 +127,7 @@ h1{font-family:Cambria,Georgia,serif;font-weight:500;font-size:clamp(28px,5vw,44
 </div>
 <a id="ctaLink" href="https://xerxes-pixel.github.io/north-pickering-home-fit-quiz/">Take the 2-min home-fit quiz</a>
 </div>
-<p class="sources"><strong>Sources &amp; notes:</strong> Community facts from the City of Pickering &mdash; Seaton Community page (pickering.ca) and the City's official Seaton Community Map (August 15, 2025); Seaton Recreation Complex &amp; Library status from letstalkpickering.ca/seaton; Seaton Hiking Trail details from the Ontario Trails Council; Seaton Village Long-Term Care and the Seaton Paramedic Response Station from the Region of Durham; builder communities and joint-venture details from Team Rajpal's Ultimate Seaton Builder Comparison Guide. Base map &copy; OpenStreetMap contributors and &copy; CARTO; satellite imagery &copy; Esri. Markers with a street address are placed at that address; markers for future or designated sites are placed at the corner or block the City describes and are approximate. Designated school sites are lands reserved on the City's map &mdash; final confirmation depends on the school boards and Ministry of Education funding, and a school may be built years after homes are occupied, or may not proceed. All plans, dates, and projects are subject to change &mdash; verify before making decisions.</p>
+<p class="sources"><strong>Sources &amp; notes:</strong> Community facts from the City of Pickering &mdash; Seaton Community page (pickering.ca) and the City's official Seaton Community Map (August 15, 2025); Seaton Recreation Complex &amp; Library status from letstalkpickering.ca/seaton; Seaton Hiking Trail details from the Ontario Trails Council; Seaton Village Long-Term Care and the Seaton Paramedic Response Station from the Region of Durham; builder communities and joint-venture details from Team Rajpal's Ultimate Seaton Builder Comparison Guide. Base map &copy; OpenStreetMap contributors and &copy; CARTO; satellite imagery &copy; Esri. Markers with a street address are placed at that address. Many of the future and designated sites have been positioned or corrected on the ground by Team Rajpal; the remainder are placed at the corner or block the City describes and are approximate. Designated school sites are lands reserved on the City's map &mdash; final confirmation depends on the school boards and Ministry of Education funding, and a school may be built years after homes are occupied, or may not proceed. All plans, dates, and projects are subject to change &mdash; verify before making decisions.</p>
 <div class="brand-foot">World Class Service &middot; World Class Results<br>Team Rajpal &middot; Re/Max Key2 Real Estate, Brokerage &middot; Seaton, Pickering, Ontario</div>
 </div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -146,21 +146,21 @@ const SCH = " These are lands reserved for a school on the City's official Seato
 
 const places = [
 // ---------- SCHOOLS ----------
-{id:"ddsb",lat:43.8728,lng:-79.1204,cat:"school",status:"open",name:"Josiah Henson Public School",
- txt:"Durham District School Board elementary school at the northwest corner of Burkholder Drive and Azalea Avenue, south of Taunton. The board planned to open it in fall 2025 &mdash; the first new public school built for Seaton families. Approximate placement at the described corner. Source: City of Pickering."},
-{id:"dcdsb",lat:43.8722,lng:-79.1142,cat:"school",status:"building",name:"New Catholic elementary school (DCDSB)",
- txt:"Durham Catholic District School Board elementary school planned to open September 2026, on the north side of Hibiscus Drive between Sapphire Drive and Burkholder Drive. Approximate placement on the described block. Source: City of Pickering."},
+{id:"ddsb",lat:43.872117,lng:-79.115939,cat:"school",status:"open",name:"Josiah Henson Public School",
+ txt:"Durham District School Board elementary school at the northwest corner of Burkholder Drive and Azalea Avenue, south of Taunton. The board planned to open it in fall 2025 &mdash; the first new public school built for Seaton families. Position confirmed by Team Rajpal. Source: City of Pickering."},
+{id:"dcdsb",lat:43.870725,lng:-79.114923,cat:"school",status:"building",name:"New Catholic elementary school (DCDSB)",
+ txt:"Durham Catholic District School Board elementary school planned to open September 2026, on the north side of Hibiscus Drive between Sapphire Drive and Burkholder Drive. Position confirmed by Team Rajpal. Source: City of Pickering."},
 {id:"sec_n",lat:43.9060,lng:-79.1180,cat:"school",status:"proposed",name:"Designated secondary school site &mdash; north Seaton",
  txt:"Land set aside for a future secondary school (high school) in north Seaton." + SCH},
-{id:"sec_brock",lat:43.9018,lng:-79.0862,cat:"school",status:"proposed",name:"Designated secondary school site &mdash; Brock Road",
+{id:"sec_brock",lat:43.906715,lng:-79.095297,cat:"school",status:"proposed",name:"Designated secondary school site &mdash; Brock Road",
  txt:"Land set aside for a future secondary school (high school) near Brock Road and Fifth Concession, alongside a proposed recreation centre and an elementary site." + SCH},
 {id:"sec_s",lat:43.8790,lng:-79.1265,cat:"school",status:"proposed",name:"Designated secondary school site &mdash; south-central Seaton",
  txt:"Land set aside for a future secondary school (high school) in south-central Seaton, in the Whites Road / Elizabeth MacKenzie Drive area." + SCH},
-{id:"el_wm1",lat:43.9012,lng:-79.1140,cat:"school",status:"proposed",name:"Designated elementary school site &mdash; Wilson Meadows (north)",
+{id:"el_wm1",lat:43.902968,lng:-79.115396,cat:"school",status:"proposed",name:"Designated elementary school site &mdash; Wilson Meadows (north)",
  txt:"Land set aside for a future elementary school in Wilson Meadows, on the north side of Alexander Knox Road near the Hollyberry Green phases." + SCH},
-{id:"el_wm2",lat:43.8996,lng:-79.1105,cat:"school",status:"proposed",name:"Designated elementary school site &mdash; Wilson Meadows",
+{id:"el_wm2",lat:43.902087,lng:-79.114959,cat:"school",status:"proposed",name:"Designated elementary school site &mdash; Wilson Meadows",
  txt:"A second school site in Wilson Meadows, also north of Alexander Knox Road. Wilson Meadows spans both sides of Alexander Knox &mdash; its school lands sit on the north side." + SCH},
-{id:"el_tc1",lat:43.9078,lng:-79.1042,cat:"school",status:"proposed",name:"Designated elementary school site &mdash; Thompson's Corners",
+{id:"el_tc1",lat:43.909229,lng:-79.100661,cat:"school",status:"proposed",name:"Designated elementary school site &mdash; Thompson's Corners",
  txt:"Land set aside for a future elementary school in Thompson's Corners, near the Elsa-Storry Avenue phases already under construction." + SCH},
 {id:"el_tc2",lat:43.9052,lng:-79.0955,cat:"school",status:"proposed",name:"Designated elementary school site &mdash; east Thompson's Corners",
  txt:"Land set aside for a future elementary school in the east of Thompson's Corners." + SCH},
@@ -186,21 +186,21 @@ const places = [
  txt:"Planned for the southeast corner of Mulberry Lane and Alexander Knox Road, in Wilson Meadows. The City's plans include a full-size lit soccer pitch, a lit ball diamond, tennis and pickleball courts, half-court basketball, playgrounds, a water play area, parking, and a washroom/fieldhouse. Not built yet &mdash; placement is at the described corner. Source: City of Pickering."},
 {id:"districtpark",lat:43.9160,lng:-79.1560,cat:"park",status:"proposed",name:"Future district park &mdash; northwest Seaton",
  txt:"The City's map designates lands in Seaton's northwest for a district-scale park, larger than the neighbourhood greens woven through the community. Approximate. Source: City of Pickering Seaton Community Map."},
-{id:"greens",lat:43.8935,lng:-79.1090,cat:"park",status:"open",name:"Neighbourhood parks &amp; greens",
+{id:"greens",lat:43.896711,lng:-79.111683,cat:"park",status:"open",name:"Neighbourhood parks &amp; greens",
  txt:"Seaton's plan threads dozens of small parks and greens through its neighbourhoods &mdash; Sea Mist Park, Winding Woods Green, Hollyberry Green, Scarlett Green, Heartwood Green, Zircon Green, Zinnia Gardens, Foxtail Green, Smoothwater Green, Hawkridge Green and more. Some are built; more arrive as each phase completes. Source: City of Pickering Seaton Community Map."},
 
 // ---------- COMMUNITY & RECREATION ----------
 {id:"reccomplex",lat:43.8943,lng:-79.1226,cat:"rec",status:"proposed",name:"Seaton Recreation Complex &amp; Library",
  txt:"Planned for the southeast corner of the re-aligned Whitevale Road (Alexander Knox) and Sideline 24 (future Burkholder Drive). Envisioned to include a 25-metre indoor pool with a warm-water leisure tank, fitness centre, gymnasium, two indoor ice pads, a walking track, and a full-service library branch. Currently in detailed design; the City plans to tender construction in spring 2027. Sources: City of Pickering; letstalkpickering.ca."},
-{id:"reccentre2",lat:43.9005,lng:-79.0855,cat:"rec",status:"proposed",name:"Proposed recreation centre &mdash; Brock Road",
+{id:"reccentre2",lat:43.908031,lng:-79.09564,cat:"rec",status:"proposed",name:"Proposed recreation centre &mdash; Brock Road",
  txt:"Separate from the Seaton Recreation Complex, the City's map marks a second proposed recreation centre near Brock Road in the northeast. Proposed only &mdash; plans may change. Source: City of Pickering Seaton Community Map."},
 {id:"phcc",lat:43.9257754,lng:-79.0748442,cat:"rec",status:"open",name:"Dorsay Community &amp; Heritage Centre (Pickering Heritage &amp; Community Centre)",
  txt:"Just east of Seaton at the Pickering Museum Village site, bringing a museum, library, and community centre together under one roof in a zero-carbon building. Long referred to as the Pickering Heritage &amp; Community Centre; it opened to the community in 2026. Source: City of Pickering."},
 
 // ---------- SHOPS & PLAZAS ----------
-{id:"plaza_ak",lat:43.9004,lng:-79.1110,cat:"shop",status:"proposed",name:"Commercial plaza &mdash; Alexander Knox &amp; Peter Matthews",
- txt:"A plaza is planned at the southwest corner of Alexander Knox Road and Peter Matthews Drive, with uses expected to include a grocery store, daycare, pharmacy, and restaurants. The applicant anticipates construction starting in 2026. Approximate placement at the described corner. Source: City of Pickering."},
-{id:"plaza_taunton",lat:43.8752,lng:-79.1158,cat:"shop",status:"proposed",name:"Commercial plaza &mdash; Taunton Road",
+{id:"plaza_ak",lat:43.896564,lng:-79.118557,cat:"shop",status:"proposed",name:"Commercial plaza &mdash; Alexander Knox &amp; Peter Matthews",
+ txt:"A plaza is planned at the southwest corner of Alexander Knox Road and Peter Matthews Drive, with uses expected to include a grocery store, daycare, pharmacy, and restaurants. The applicant anticipates construction starting in 2026. Position confirmed by Team Rajpal. Source: City of Pickering."},
+{id:"plaza_taunton",lat:43.876746,lng:-79.117298,cat:"shop",status:"proposed",name:"Commercial plaza &mdash; Taunton Road",
  txt:"The City is reviewing a proposal for a plaza on the south side of Taunton Road between Burkholder Drive and Peter Matthews Drive, expected to include a grocery store, banks, and restaurants. The applicant anticipates construction starting spring 2026. Source: City of Pickering."},
 {id:"mixedbrock",lat:43.8905,lng:-79.0905,cat:"shop",status:"proposed",name:"Brock Road mixed-use corridor",
  txt:"Lands along Brock Road are designated future mixed use &mdash; commercial, apartments and/or townhouses. This is where Seaton's main-street energy is planned to concentrate as the community matures. Source: City of Pickering Seaton Community Map."},
@@ -214,11 +214,11 @@ const places = [
  txt:"Opened October 28, 2025 by the Region of Durham at 1890 Fifth Concession Road &mdash; a LEED Silver facility with a training centre, storage for six ambulances, and a driver training pad, built to improve response times as Seaton and north Pickering grow. Source: Region of Durham."},
 
 // ---------- TRANSIT & ROADS ----------
-{id:"hwy407brock",lat:43.9145,lng:-79.0975,cat:"transit",status:"open",name:"Highway 407 &mdash; Brock Road interchange",
+{id:"hwy407brock",lat:43.91834,lng:-79.098415,cat:"transit",status:"open",name:"Highway 407 &mdash; Brock Road interchange",
  txt:"One of two full 407 interchanges serving Seaton today. Highway 7 runs along Seaton's northern edge, with the 407 just south of it through the Innovation Corridor. Source: City of Pickering."},
-{id:"hwy407whites",lat:43.9128,lng:-79.1420,cat:"transit",status:"open",name:"Highway 407 &mdash; Whites Road interchange",
+{id:"hwy407whites",lat:43.905766,lng:-79.144707,cat:"transit",status:"open",name:"Highway 407 &mdash; Whites Road interchange",
  txt:"The western 407 interchange serving Seaton. A third interchange is planned at Peter Matthews Drive, and the Province has announced the widening of Highway 7. Source: City of Pickering."},
-{id:"gobus",lat:43.9130,lng:-79.0930,cat:"transit",status:"open",name:"GO Bus carpool lot",
+{id:"gobus",lat:43.913023,lng:-79.097614,cat:"transit",status:"open",name:"GO Bus carpool lot",
  txt:"A GO Bus carpool facility near Brock Road and the 407 in Seaton's northeast, shown on the City's official Seaton Community Map (August 2025)."},
 {id:"brougham",lat:43.9200533,lng:-79.1082784,cat:"transit",status:"open",name:"Brougham (historic hamlet)",
  txt:"One of three historic hamlets within or beside Seaton, along with Whitevale and Green River. Brougham sits at Highway 7 in the north of the community."},
@@ -228,20 +228,20 @@ const places = [
 // ---------- BUILDER COMMUNITIES ----------
 {id:"c_seatonville",lat:43.9023685,lng:-79.0907756,cat:"builder",status:"building",name:"Seatonville",
  txt:"A multi-builder community in the northeast: Arista Homes, DECO Homes, Fieldgate Homes, OPUS Homes, Mattamy Homes and others. Several Seaton communities are joint ventures between three to five builders sharing one master plan &mdash; so the home next door may carry a different builder's warranty than yours. Source: Team Rajpal Seaton Builder Guide."},
-{id:"c_greenwood",lat:43.9018788,lng:-79.097957,cat:"builder",status:"building",name:"Greenwood Seaton",
- txt:"A joint community by OPUS Homes and DECO Homes in the northeast, near the shared presentation centre on Whitevale Road. Source: Team Rajpal Seaton Builder Guide."},
-{id:"c_windingwoods",lat:43.90137,lng:-79.09755,cat:"builder",status:"building",name:"Seaton Winding Woods &mdash; Fieldgate",
- txt:"Fieldgate Homes' Seaton community. This marker is Fieldgate's Seaton sales office at 1705 Whitevale Road Unit 1, which is the reliable address to visit &mdash; homes in the community sit nearby. Source: Team Rajpal Seaton Builder Guide."},
+{id:"c_greenwood",lat:43.910484,lng:-79.098043,cat:"builder",status:"building",name:"Greenwood Seaton",
+ txt:"A joint community by OPUS Homes and DECO Homes in Seaton's northeast, near Brock Road. Position confirmed by Team Rajpal. The shared presentation centre is on Whitevale Road. Source: Team Rajpal Seaton Builder Guide."},
+{id:"c_windingwoods",lat:43.892309,lng:-79.118071,cat:"builder",status:"building",name:"Seaton Winding Woods &mdash; Fieldgate",
+ txt:"Fieldgate Homes' Seaton community, west of Peter Matthews Drive. Position confirmed by Team Rajpal. Fieldgate's Seaton sales office is separately located at 1705 Whitevale Road Unit 1. Source: Team Rajpal Seaton Builder Guide."},
 {id:"c_mulberry",lat:43.8941081,lng:-79.1045058,cat:"builder",status:"building",name:"Seaton Mulberry &mdash; Mattamy",
  txt:"Mattamy Homes' community around Mulberry Lane, next to the future Dave Ryan Community Park and the Alexander Knox corridor. Source: Team Rajpal Seaton Builder Guide."},
-{id:"c_whitevale",lat:43.8757742,lng:-79.1189980,cat:"builder",status:"building",name:"Seaton Whitevale &mdash; Mattamy",
- txt:"Mattamy Homes. This marker is the sales centre at 1075 Taunton Road. Note that several Seaton sales centres sit well outside the community they sell, so ask us where the actual homes are before you assume the location. Source: Team Rajpal Seaton Builder Guide."},
+{id:"c_whitevale",lat:43.898016,lng:-79.112492,cat:"builder",status:"building",name:"Seaton Whitevale &mdash; Mattamy",
+ txt:"Mattamy Homes' Seaton Whitevale community, in the Alexander Knox area. Position confirmed by Team Rajpal &mdash; note the sales centre sits well away from the homes, at 1075 Taunton Road, which catches a lot of buyers out. Source: Team Rajpal Seaton Builder Guide."},
 {id:"c_newseaton",lat:43.8759294,lng:-79.1308652,cat:"builder",status:"building",name:"New Seaton &mdash; Brookfield, Aspen Ridge &amp; TowerHill",
  txt:"A three-builder joint community. This marker is the New Seaton Presentation Centre at 2820 Sideline 26, off Taunton Road. Source: Team Rajpal Seaton Builder Guide."},
 {id:"c_fieldgate12",lat:43.8800,lng:-79.1195,cat:"builder",status:"building",name:"Fieldgate Seaton Ph 1 &amp; 2",
  txt:"Fieldgate Homes' earlier Seaton phases, in the Burkholder Drive area. Approximate &mdash; ask us for the exact streets currently releasing. Source: Team Rajpal Seaton Builder Guide."},
-{id:"c_bloom",lat:43.8715,lng:-79.1185,cat:"builder",status:"building",name:"Seaton &middot; Bloom &middot; Seaton Taunton &mdash; Mattamy",
- txt:"Mattamy Homes, south of Taunton Road near the two new elementary schools. Approximate. Source: Team Rajpal Seaton Builder Guide."},
+{id:"c_bloom",lat:43.876159,lng:-79.122548,cat:"builder",status:"building",name:"Seaton &middot; Bloom &middot; Seaton Taunton &mdash; Mattamy",
+ txt:"Mattamy Homes, south of Taunton Road. Position confirmed by Team Rajpal. Source: Team Rajpal Seaton Builder Guide."},
 {id:"c_seatonsouth",lat:43.8700,lng:-79.1120,cat:"builder",status:"building",name:"Seaton South &mdash; OPUS &amp; DECO",
  txt:"A joint community by OPUS Homes and DECO Homes in the south, toward Peter Matthews Drive. Approximate. Source: Team Rajpal Seaton Builder Guide."},
 {id:"c_mainstreet",lat:43.8680,lng:-79.0950,cat:"builder",status:"building",name:"Main Street Seaton &mdash; Duffin Heights",
