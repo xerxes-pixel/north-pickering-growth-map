@@ -4,128 +4,86 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>North Pickering Growth Map | Team Rajpal</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
 --ink:#08172F; --ink-soft:#294B7A; --paper:#EEF1F4; --card:#FFFFFF;
---grid-line:#D8DDE3; --sage:#7C9473; --sage-dark:#4E6146; --sage-fill:#E4EBDD;
---red:#DC1C2E; --red-dark:#A8121F; --red-fill:#FFE3E6;
---blue:#004D9A; --blue-dark:#00376E; --blue-fill:#D9E1EC;
---school:#6B4FA1; --school-fill:#E5DFF2;
---slate:#55606B; --slate-fill:#E7EEF6; --hairline:#C7CCD3;
+--grid-line:#D8DDE3; --red:#DC1C2E; --red-dark:#A8121F; --red-fill:#FFE3E6;
+--blue:#004D9A; --blue-dark:#00376E; --slate:#55606B; --hairline:#C7CCD3;
+--c-school:#6B4FA1; --c-park:#3F7A38; --c-rec:#004D9A; --c-shop:#C1762E;
+--c-care:#0E7C86; --c-transit:#55606B; --c-builder:#DC1C2E;
 }
 *{box-sizing:border-box;}
 html,body{margin:0;padding:0;}
-body{
-background:var(--paper); font-family:Calibri,'Segoe UI',Optima,Arial,sans-serif; color:var(--ink); min-height:100vh;
-background-image:
-linear-gradient(var(--grid-line) 1px, transparent 1px),
-linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
-background-size:28px 28px;
-}
-.hero{ background:var(--ink); color:#fff; padding:44px 20px 38px; border-bottom:4px solid var(--red); }
-.hero-inner{ max-width:960px; margin:0 auto; }
-.logobox{ background:#fff; border-radius:12px; padding:10px 12px; display:inline-block; margin-bottom:20px; }
-.logobox img{ width:88px; height:auto; display:block; }
-.eyebrow{
-font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:0.08em;
-text-transform:uppercase; color:#9FB3D1;
-display:flex; align-items:center; gap:10px; margin-bottom:14px;
-}
-.eyebrow::before{ content:""; width:22px; height:2px; background:var(--red); display:inline-block; }
-h1{ font-family:Cambria,Georgia,'Times New Roman',serif; font-weight:500; font-size:clamp(28px,5vw,44px); line-height:1.1; margin:0 0 12px; letter-spacing:-0.01em; color:#fff; }
-.sub{ font-size:17px; color:#C9D4DE; line-height:1.6; margin:0; max-width:64ch; }
-.wrap{ max-width:960px; margin:0 auto; padding:30px 20px 80px; }
-.stats{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; margin:0 0 28px; }
-.stat{ background:var(--card); border:1px solid var(--hairline); border-top:4px solid var(--blue); border-radius:3px; padding:14px 16px; }
-.stat:nth-child(2){ border-top-color:var(--red); }
-.stat:nth-child(3){ border-top-color:#C1922E; }
-.stat:nth-child(4){ border-top-color:#5F8A45; }
-.stat .n{ font-family:Cambria,Georgia,serif; font-size:26px; font-weight:600; color:var(--ink); }
-.stat:nth-child(1) .n{ color:var(--blue); }
-.stat:nth-child(2) .n{ color:var(--red); }
-.stat:nth-child(3) .n{ color:#8A6A16; }
-.stat:nth-child(4) .n{ color:#4E6146; }
-.stat .l{ font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.05em; text-transform:uppercase; color:var(--slate); margin-top:3px; }
-.map-shell{ background:var(--card); border:1px solid var(--hairline); border-radius:3px; padding:20px; position:relative; }
-.map-shell::before{ content:""; position:absolute; top:10px; left:10px; right:10px; bottom:10px; border:1px dashed var(--hairline); pointer-events:none; }
-.map-head{ display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px; position:relative; z-index:2; }
-.map-title{ font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:0.06em; text-transform:uppercase; color:var(--red-dark); }
-.filters{ display:flex; gap:6px; flex-wrap:wrap; position:relative; z-index:2; }
-.chip{
-font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:0.03em;
-border:1.5px solid var(--hairline); background:#fff; color:var(--slate);
-border-radius:20px; padding:6px 12px; cursor:pointer; display:flex; align-items:center; gap:6px;
-transition:all .15s ease;
-}
-.chip .cdot{ width:9px; height:9px; border-radius:50%; display:inline-block; }
-.chip[data-f="all"] .cdot{ background:linear-gradient(135deg,#7C9473 25%,#DC1C2E 25% 50%,#55606B 50% 75%,#6B4FA1 75%); }
-.chip[data-f="open"] .cdot{ background:#7C9473; }
-.chip[data-f="build"] .cdot{ background:#DC1C2E; }
-.chip[data-f="plan"] .cdot{ background:#fff; border:1.5px dashed #55606B; }
-.chip[data-f="school"] .cdot{ background:#6B4FA1; }
-.chip[data-f="builder"] .cdot{ background:#0E7C86; }
-.chip:hover{ border-color:var(--ink-soft); color:var(--ink); }
-.chip.active{ background:var(--ink); color:#fff; border-color:var(--ink); }
-svg{ width:100%; height:auto; display:block; position:relative; z-index:1; }
-.zone{ cursor:pointer; transition:opacity .15s ease; }
-.zone:hover polygon, .zone:hover rect{ opacity:0.82; }
-.zone.active polygon, .zone.active rect{ stroke-width:3; }
-.pin{ cursor:pointer; }
-.pin circle.halo{ opacity:0; transition:opacity .15s ease; }
-.pin:hover circle.halo, .pin.active circle.halo{ opacity:0.35; }
-.pin.hidden{ display:none; }
-@keyframes pulseRing{ 0%{r:8; opacity:.55;} 70%{r:17; opacity:0;} 100%{r:17; opacity:0;} }
-.pulse-ring{ animation:pulseRing 2.2s ease-out infinite; }
-.maplabel{ font-family:'IBM Plex Mono',monospace; fill:var(--slate); pointer-events:none; }
-.zonelabel{ font-family:Cambria,Georgia,serif; pointer-events:none; }
-.hamlet{ font-family:'IBM Plex Mono',monospace; fill:var(--ink-soft); pointer-events:none; }
-.info{ margin-top:14px; border-top:1px solid var(--hairline); padding:16px 0 4px 16px; border-left:4px solid var(--hairline); position:relative; z-index:2; min-height:100px; transition:border-color .2s ease; }
-.info .tag{ display:inline-block; font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.05em; text-transform:uppercase; padding:4px 10px; border-radius:3px; margin-bottom:8px; }
-.tag.open{ background:var(--sage-fill); color:var(--sage-dark); }
-.tag.build{ background:var(--red-fill); color:var(--red-dark); }
-.tag.plan{ background:var(--slate-fill); color:var(--slate); }
-.tag.school{ background:var(--school-fill); color:var(--school); }
-.tag.builder{ background:#D6EFF1; color:#0A5D65; }
-.tag.zone-tag{ background:var(--slate-fill); color:var(--ink-soft); }
-.info h3{ font-family:Cambria,Georgia,serif; font-weight:600; font-size:20px; margin:0 0 6px; }
-.info p{ font-size:14.5px; line-height:1.65; color:var(--ink-soft); margin:0; max-width:74ch; }
-.hint{ font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--slate); }
-.builders{ margin-top:34px; }
-.builders h2, .cta .ct{ font-family:Cambria,Georgia,serif; }
-.builders h2{ font-weight:600; font-size:25px; margin:0 0 6px; color:var(--ink); }
-.builders h2 span{ color:var(--red); }
-.builders .bsub{ font-size:14.5px; color:var(--slate); margin:0 0 16px; max-width:70ch; }
-.bgrid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:10px; }
-.bcard{ background:var(--card); border:1px solid var(--hairline); border-left:4px solid var(--blue); border-radius:3px; padding:16px 18px; transition:border-color .15s ease; }
-.bcard:hover{ border-left-color:var(--red); }
-.bcard .bn{ font-family:Cambria,Georgia,serif; font-size:17px; font-weight:600; margin:0 0 4px; color:var(--ink); }
-.bcard .bp{ font-size:13.5px; line-height:1.55; color:var(--ink-soft); margin:0; }
-.bcard .bm{ font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.04em; text-transform:uppercase; color:var(--red-dark); margin-top:8px; }
-.cta{ margin-top:34px; background:var(--ink); color:#fff; border-radius:3px; border-left:6px solid var(--red); padding:26px 28px; display:flex; justify-content:space-between; align-items:center; gap:18px; flex-wrap:wrap; }
-.cta .ct{ font-size:21px; font-weight:600; margin:0 0 4px; }
-.cta .cs{ font-size:14.5px; color:#B9C4CC; margin:0; }
-.cta a{ font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:0.05em; text-transform:uppercase; background:var(--red); color:#fff; padding:13px 22px; border-radius:3px; text-decoration:none; white-space:nowrap; }
-.cta a:hover{ background:var(--red-dark); }
-.sources{ margin-top:26px; font-size:12px; line-height:1.7; color:var(--slate); border-top:1px solid var(--hairline); padding-top:14px; }
-.brand-foot{ text-align:center; margin-top:30px; font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.06em; text-transform:uppercase; color:var(--slate); }
-@media (max-width:560px){
-.map-shell{ padding:14px; }
-.info h3{ font-size:18px; }
-}
+body{background:var(--paper);font-family:Calibri,'Segoe UI',Optima,Arial,sans-serif;color:var(--ink);
+background-image:linear-gradient(var(--grid-line) 1px,transparent 1px),linear-gradient(90deg,var(--grid-line) 1px,transparent 1px);background-size:28px 28px;}
+.hero{background:var(--ink);color:#fff;padding:44px 20px 38px;border-bottom:4px solid var(--red);}
+.hero-inner{max-width:1000px;margin:0 auto;}
+.logobox{background:#fff;border-radius:12px;padding:10px 12px;display:inline-block;margin-bottom:20px;}
+.logobox img{width:88px;height:auto;display:block;}
+.eyebrow{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:#9FB3D1;display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.eyebrow::before{content:"";width:22px;height:2px;background:var(--red);display:inline-block;}
+h1{font-family:Cambria,Georgia,serif;font-weight:500;font-size:clamp(28px,5vw,44px);line-height:1.1;margin:0 0 12px;color:#fff;}
+.sub{font-size:17px;color:#C9D4DE;line-height:1.6;margin:0;max-width:66ch;}
+.wrap{max-width:1000px;margin:0 auto;padding:30px 20px 80px;}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:0 0 24px;}
+.stat{background:var(--card);border:1px solid var(--hairline);border-top:4px solid var(--blue);border-radius:3px;padding:14px 16px;}
+.stat:nth-child(2){border-top-color:var(--red);}
+.stat:nth-child(3){border-top-color:#C1922E;}
+.stat:nth-child(4){border-top-color:#3F7A38;}
+.stat .n{font-family:Cambria,Georgia,serif;font-size:26px;font-weight:600;}
+.stat:nth-child(1) .n{color:var(--blue);} .stat:nth-child(2) .n{color:var(--red);}
+.stat:nth-child(3) .n{color:#8A6A16;} .stat:nth-child(4) .n{color:#3F7A38;}
+.stat .l{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.05em;text-transform:uppercase;color:var(--slate);margin-top:3px;}
+.map-shell{background:var(--card);border:1px solid var(--hairline);border-radius:3px;padding:18px;}
+.map-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px;}
+.map-title{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.06em;text-transform:uppercase;color:var(--red-dark);}
+.filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+.chip{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.03em;border:1.5px solid var(--hairline);background:#fff;color:var(--slate);border-radius:20px;padding:6px 12px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .15s ease;}
+.chip .cdot{width:10px;height:10px;border-radius:50%;display:inline-block;}
+.chip:hover{border-color:var(--ink-soft);color:var(--ink);}
+.chip.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+#map{height:560px;width:100%;border:1px solid var(--hairline);border-radius:3px;}
+@media(max-width:640px){#map{height:420px;}}
+.mk{border-radius:50%;border:2.5px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.4);}
+.mk.proposed{background:#fff !important;}
+.mk.building::after{content:"";position:absolute;inset:-5px;border-radius:50%;border:2px solid currentColor;animation:pulse 2s ease-out infinite;}
+@keyframes pulse{0%{transform:scale(.85);opacity:.7}70%{transform:scale(1.5);opacity:0}100%{opacity:0}}
+.info{margin-top:14px;border-top:1px solid var(--hairline);padding:16px 0 4px 16px;border-left:4px solid var(--hairline);min-height:96px;transition:border-color .2s;}
+.badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;}
+.badge{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.05em;text-transform:uppercase;padding:4px 10px;border-radius:3px;}
+.b-open{background:#E4EBDD;color:#3F5C36;}
+.b-building{background:var(--red-fill);color:var(--red-dark);}
+.b-proposed{background:#E7EEF6;color:var(--slate);}
+.info h3{font-family:Cambria,Georgia,serif;font-weight:600;font-size:20px;margin:0 0 6px;}
+.info p{font-size:14.5px;line-height:1.65;color:var(--ink-soft);margin:0;max-width:74ch;}
+.hint{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--slate);}
+.builders{margin-top:34px;}
+.builders h2{font-family:Cambria,Georgia,serif;font-weight:600;font-size:25px;margin:0 0 6px;}
+.builders h2 span{color:var(--red);}
+.bsub{font-size:14.5px;color:var(--slate);margin:0 0 16px;max-width:72ch;line-height:1.6;}
+.bgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:10px;}
+.bcard{background:var(--card);border:1px solid var(--hairline);border-left:4px solid var(--blue);border-radius:3px;padding:16px 18px;}
+.bcard:hover{border-left-color:var(--red);}
+.bcard .bn{font-family:Cambria,Georgia,serif;font-size:17px;font-weight:600;margin:0 0 4px;}
+.bcard .bp{font-size:13.5px;line-height:1.55;color:var(--ink-soft);margin:0;}
+.cta{margin-top:34px;background:var(--ink);color:#fff;border-radius:3px;border-left:6px solid var(--red);padding:26px 28px;display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;}
+.cta .ct{font-family:Cambria,Georgia,serif;font-size:21px;font-weight:600;margin:0 0 4px;}
+.cta .cs{font-size:14.5px;color:#B9C4CC;margin:0;}
+.cta a{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.05em;text-transform:uppercase;background:var(--red);color:#fff;padding:13px 22px;border-radius:3px;text-decoration:none;white-space:nowrap;}
+.cta a:hover{background:var(--red-dark);}
+.sources{margin-top:26px;font-size:12px;line-height:1.7;color:var(--slate);border-top:1px solid var(--hairline);padding-top:14px;}
+.brand-foot{text-align:center;margin-top:30px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--slate);}
 </style>
 </head>
 <body>
-<div class="hero">
-<div class="hero-inner">
-<div class="logobox"><img src="tr-logo.png" alt="Team Rajpal - World Class Service, World Class Results"></div>
+<div class="hero"><div class="hero-inner">
+<div class="logobox"><img src="tr-logo.png" alt="Team Rajpal"></div>
 <div class="eyebrow">Team Rajpal &mdash; North Pickering</div>
 <h1>The North Pickering growth map</h1>
-<p class="sub">Seaton is one of the largest master-planned communities in Canada, and most of it isn't built yet. Explore what's here today, what's under construction, what's planned &mdash; and where land is already set aside for future schools, parks, and community hubs.</p>
-</div>
-</div>
+<p class="sub">Seaton is one of the largest master-planned communities in Canada, and most of it isn't built yet. Explore what's open, what's under construction, and what's still proposed &mdash; on a real map you can zoom, pan, and switch to satellite.</p>
+</div></div>
 <div class="wrap">
 <div class="stats">
 <div class="stat"><div class="n">7,000+</div><div class="l">Acres planned</div></div>
@@ -134,235 +92,230 @@ svg{ width:100%; height:auto; display:block; position:relative; z-index:1; }
 <div class="stat"><div class="n">50%+</div><div class="l">Preserved as open space</div></div>
 </div>
 <div class="map-shell">
-<div class="map-head">
-<div class="map-title">Seaton &mdash; schematic plan view</div>
+<div class="map-head"><div class="map-title">Seaton &mdash; live map</div></div>
 <div class="filters" id="filters">
-<button class="chip active" data-f="all"><span class="cdot"></span>All</button>
-<button class="chip" data-f="open"><span class="cdot"></span>Open now</button>
-<button class="chip" data-f="build"><span class="cdot"></span>Building</button>
-<button class="chip" data-f="plan"><span class="cdot"></span>Planned</button>
-<button class="chip" data-f="school"><span class="cdot"></span>School sites</button>
-<button class="chip" data-f="builder"><span class="cdot"></span>Builder communities</button>
+<button class="chip active" data-f="all"><span class="cdot" style="background:linear-gradient(135deg,#6B4FA1 20%,#3F7A38 20% 40%,#004D9A 40% 60%,#C1762E 60% 80%,#DC1C2E 80%)"></span>Everything</button>
+<button class="chip" data-f="school"><span class="cdot" style="background:#6B4FA1"></span>Schools</button>
+<button class="chip" data-f="park"><span class="cdot" style="background:#3F7A38"></span>Parks &amp; trails</button>
+<button class="chip" data-f="rec"><span class="cdot" style="background:#004D9A"></span>Community &amp; rec</button>
+<button class="chip" data-f="shop"><span class="cdot" style="background:#C1762E"></span>Shops &amp; plazas</button>
+<button class="chip" data-f="care"><span class="cdot" style="background:#0E7C86"></span>Health &amp; care</button>
+<button class="chip" data-f="transit"><span class="cdot" style="background:#55606B"></span>Transit &amp; roads</button>
+<button class="chip" data-f="builder"><span class="cdot" style="background:#DC1C2E"></span>Builder communities</button>
 </div>
-</div>
-<svg viewBox="0 0 940 660" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Schematic map of the Seaton community in North Pickering">
-<rect x="0" y="0" width="940" height="660" fill="transparent"/>
-<path d="M 160 45 L 830 45 L 830 411 L 610 592 L 468 592 L 468 455 L 336 455 L 300 400 L 258 356 L 208 300 L 168 210 Z" fill="#E9F0DF" stroke="#7A2230" stroke-width="1.8" opacity="0.95"/>
-<g class="zone" data-id="corridor">
-<rect x="150" y="58" width="680" height="70" fill="#D9E1EC" stroke="#004D9A" stroke-width="1.3" opacity="0.92"/>
-<text x="330" y="80" text-anchor="middle" class="zonelabel" font-size="14" fill="#00376E">Pickering Innovation Corridor</text>
-<text x="330" y="97" text-anchor="middle" class="maplabel" font-size="10" fill="#3E76B4">NEIGHBOURHOOD 21</text>
-</g>
-<g class="zone" data-id="mtpleasant">
-<rect x="185" y="159" width="241" height="226" rx="8" fill="#DCE9D2" stroke="#5F8A45" stroke-width="1.4"/>
-<text x="305" y="290" text-anchor="middle" class="zonelabel" font-size="16" fill="#3E6127">Mount Pleasant</text>
-<text x="305" y="308" text-anchor="middle" class="maplabel" font-size="10" fill="#5F8A45">NEIGHBOURHOOD 18</text>
-</g>
-<g class="zone" data-id="thompsons">
-<rect x="615" y="145" width="215" height="88" rx="8" fill="#F7E8C3" stroke="#C1922E" stroke-width="1.4"/>
-<text x="722" y="180" text-anchor="middle" class="zonelabel" font-size="15" fill="#7A5A14">Thompson's Corners</text>
-<text x="722" y="198" text-anchor="middle" class="maplabel" font-size="10" fill="#A87C1F">NEIGHBOURHOOD 20</text>
-</g>
-<g class="zone" data-id="wilson">
-<rect x="589" y="240" width="198" height="110" rx="8" fill="#D8E6F6" stroke="#3E76B4" stroke-width="1.4"/>
-<text x="688" y="310" text-anchor="middle" class="zonelabel" font-size="15" fill="#1F4C7E">Wilson Meadows</text>
-<text x="688" y="328" text-anchor="middle" class="maplabel" font-size="10" fill="#3E76B4">NEIGHBOURHOOD 19</text>
-</g>
-<g class="zone" data-id="brocktaunton">
-<rect x="682" y="336" width="104" height="60" rx="8" fill="#F7DCD6" stroke="#BE5B44" stroke-width="1.4"/>
-<text x="734" y="362" text-anchor="middle" class="zonelabel" font-size="14" fill="#7E3320">Brock-Taunton</text>
-<text x="734" y="380" text-anchor="middle" class="maplabel" font-size="10" fill="#BE5B44">NEIGHBOURHOOD 17</text>
-</g>
-<g class="zone" data-id="lamoreaux">
-<polygon points="408,348 580,348 580,580 460,580 460,455 408,455" fill="#E5DFF2" stroke="#7568B2" stroke-width="1.4"/>
-<text x="500" y="432" text-anchor="middle" class="zonelabel" font-size="15" fill="#493D7E">Lamoreaux</text>
-<text x="500" y="450" text-anchor="middle" class="maplabel" font-size="10" fill="#7568B2">NEIGHBOURHOOD 16</text>
-</g>
-<line x1="30" y1="45" x2="912" y2="45" stroke="#9AA5AC" stroke-width="3"/>
-<text x="866" y="39" class="maplabel" font-size="11">HWY 7</text>
-<line x1="30" y1="99" x2="912" y2="99" stroke="#8E99A1" stroke-width="5"/>
-<text x="34" y="114" class="maplabel" font-size="11">HWY 407</text>
-<line x1="30" y1="455" x2="912" y2="455" stroke="#9AA5AC" stroke-width="3"/>
-<text x="34" y="473" class="maplabel" font-size="11">TAUNTON RD</text>
-<line x1="804" y1="45" x2="804" y2="640" stroke="#9AA5AC" stroke-width="3"/>
-<text x="812" y="636" class="maplabel" font-size="11">BROCK RD</text>
-<line x1="434" y1="133" x2="434" y2="474" stroke="#9AA5AC" stroke-width="2"/>
-<text x="425" y="215" class="maplabel" font-size="10" transform="rotate(-90 425 215)" text-anchor="middle">WHITES RD</text>
-<line x1="589" y1="133" x2="589" y2="580" stroke="#9AA5AC" stroke-width="2"/>
-<text x="580" y="215" class="maplabel" font-size="10" transform="rotate(-90 580 215)" text-anchor="middle">PETER MATTHEWS DR</text>
-<line x1="529" y1="367" x2="529" y2="580" stroke="#A7B0B7" stroke-width="1.6"/>
-<text x="521" y="520" class="maplabel" font-size="9" transform="rotate(-90 521 520)" text-anchor="middle">BURKHOLDER DR</text>
-<line x1="357" y1="253" x2="830" y2="253" stroke="#9AA5AC" stroke-width="2"/>
-<text x="362" y="270" class="maplabel" font-size="10">ALEXANDER KNOX RD</text>
-<line x1="99" y1="241" x2="288" y2="241" stroke="#9AA5AC" stroke-width="2"/>
-<line x1="288" y1="241" x2="357" y2="253" stroke="#9AA5AC" stroke-width="2"/>
-<text x="216" y="234" class="maplabel" font-size="10">WHITEVALE RD</text>
-<line x1="830" y1="253" x2="912" y2="253" stroke="#A7B0B7" stroke-width="1.6"/>
-<text x="838" y="290" class="maplabel" font-size="9">FIFTH CONCESSION</text>
-<path d="M 178 48 C 156 130, 150 215, 172 288 C 194 336, 226 376, 262 420 C 292 456, 318 486, 336 512" fill="none" stroke="#7C9473" stroke-width="18" stroke-linecap="round" opacity="0.55"/>
-<path d="M 178 48 C 156 130, 150 215, 172 288 C 194 336, 226 376, 262 420 C 292 456, 318 486, 336 512" fill="none" stroke="#4E6146" stroke-width="1.8" stroke-dasharray="6 5" opacity="0.85"/>
-<text x="176" y="118" class="maplabel" font-size="9.5" transform="rotate(78 176 118)">WEST DUFFINS CREEK</text>
-<rect x="110" y="235" width="13" height="13" fill="#FFFFFF" stroke="#55606B" stroke-width="1.6"/>
-<text x="34" y="256" class="hamlet" font-size="10">WHITEVALE</text>
-<rect x="76" y="39" width="13" height="13" fill="#FFFFFF" stroke="#55606B" stroke-width="1.6"/>
-<text x="54" y="34" class="hamlet" font-size="10">GREEN RIVER</text>
-<rect x="789" y="32" width="13" height="13" fill="#FFFFFF" stroke="#55606B" stroke-width="1.6"/>
-<text x="762" y="28" class="hamlet" font-size="10">BROUGHAM</text>
-<g id="pins"></g>
-</svg>
-<div class="info" id="infoPanel">
-<span class="hint">Tap a neighbourhood or a marker to see what's happening there. Use the filters to focus on what's open, building, planned, where school lands are set aside, or who's building where.</span>
-</div>
+<div id="map"></div>
+<div class="info" id="infoPanel"><span class="hint">Tap any marker to see what it is, its status, and where the information comes from. Use the filters above, or the layer control on the map to switch to satellite.</span></div>
 </div>
 <div class="builders">
 <h2>Who's building here <span>right now</span></h2>
-<p class="bsub">Nine builders are active across Seaton, and several communities are joint ventures between three to five builders sharing one master plan &mdash; so the home next door may carry a different builder's warranty than yours. Tap "Builder communities" on the map above to see where each one is.</p>
+<p class="bsub">Nine builders are active across Seaton, and several communities are joint ventures between three to five builders sharing one master plan &mdash; so the home next door may carry a different builder's warranty than yours. Filter to "Builder communities" on the map to see where each one is. Deposit structures differ enormously between builders, and they're set per release &mdash; we'll walk you through the actual schedule before you sign anything.</p>
 <div class="bgrid">
-<div class="bcard"><div class="bn">Mattamy Homes</div><p class="bp">Seaton Whitevale, Seaton Mulberry, Seaton &middot; Bloom &middot; Seaton Taunton, and part of Seatonville.</p><div class="bm">Deposit ~10% &middot; full in ~120 days</div></div>
-<div class="bcard"><div class="bn">Fieldgate Homes</div><p class="bp">Seaton Winding Woods, Fieldgate Seaton Ph 1 &amp; 2, and part of Seatonville.</p><div class="bm">Deposit ~10-12% &middot; full in ~210 days</div></div>
-<div class="bcard"><div class="bn">OPUS Homes</div><p class="bp">Greenwood Seaton and Seaton South (with DECO), plus part of Seatonville.</p><div class="bm">Deposit ~10% &middot; full in ~190 days</div></div>
-<div class="bcard"><div class="bn">DECO Homes</div><p class="bp">Greenwood Seaton and Seaton South (with OPUS), plus part of Seatonville.</p><div class="bm">Deposit ~10% &middot; staged up to ~360 days</div></div>
-<div class="bcard"><div class="bn">Brookfield Residential</div><p class="bp">New Seaton, with Aspen Ridge and TowerHill.</p><div class="bm">Deposit ~7-9% &middot; full in ~120 days</div></div>
-<div class="bcard"><div class="bn">Aspen Ridge Homes</div><p class="bp">New Seaton, with Brookfield and TowerHill.</p><div class="bm">Deposit ~10% &middot; full in ~150 days</div></div>
-<div class="bcard"><div class="bn">Arista Homes</div><p class="bp">Part of the Seatonville joint venture in Thompson's Corners.</p><div class="bm">Deposit ~10% &middot; full in ~180 days</div></div>
-<div class="bcard"><div class="bn">TowerHill Homes</div><p class="bp">New Seaton, with Brookfield and Aspen Ridge.</p><div class="bm">Deposit schedule not published &mdash; ask</div></div>
+<div class="bcard"><div class="bn">Mattamy Homes</div><p class="bp">Seaton Whitevale, Seaton Mulberry, Seaton &middot; Bloom &middot; Seaton Taunton, and part of Seatonville.</p></div>
+<div class="bcard"><div class="bn">Fieldgate Homes</div><p class="bp">Seaton Winding Woods, Fieldgate Seaton Ph 1 &amp; 2, and part of Seatonville.</p></div>
+<div class="bcard"><div class="bn">OPUS Homes</div><p class="bp">Greenwood Seaton and Seaton South (with DECO), plus part of Seatonville.</p></div>
+<div class="bcard"><div class="bn">DECO Homes</div><p class="bp">Greenwood Seaton and Seaton South (with OPUS), plus part of Seatonville.</p></div>
+<div class="bcard"><div class="bn">Brookfield Residential</div><p class="bp">New Seaton, with Aspen Ridge and TowerHill.</p></div>
+<div class="bcard"><div class="bn">Aspen Ridge Homes</div><p class="bp">New Seaton, with Brookfield and TowerHill.</p></div>
+<div class="bcard"><div class="bn">Arista Homes</div><p class="bp">Part of the Seatonville joint venture.</p></div>
+<div class="bcard"><div class="bn">TowerHill Homes</div><p class="bp">New Seaton, with Brookfield and Aspen Ridge.</p></div>
 </div>
-<p class="bsub" style="margin-top:16px;">Every builder in Seaton lands in roughly the same place on total deposit &mdash; around 10% of purchase price. Where they differ, enormously, is how long you have to pay it and how big the first cheque is. Deposits are also set per release, so your neighbour's schedule from last spring may not be yours. We'll walk you through the actual schedule before you sign anything.</p>
 </div>
 <div class="cta">
 <div>
 <p class="ct">Want to know which release actually fits you?</p>
-<p class="cs">Team Rajpal's office is right here in Seaton. We track every release, price sheet, and incentive as it drops.</p>
+<p class="cs">Team Rajpal's office is right here in Seaton, at 2460 Brock Road. We track every release, price sheet, and incentive as it drops.</p>
 </div>
 <a id="ctaLink" href="https://xerxes-pixel.github.io/north-pickering-home-fit-quiz/">Take the 2-min home-fit quiz</a>
 </div>
-<p class="sources"><strong>Sources &amp; notes:</strong> Community facts from the City of Pickering &mdash; Seaton Community page (pickering.ca) and the City's official Seaton Community Map (August 15, 2025); Seaton Recreation Complex &amp; Library status from letstalkpickering.ca/seaton; Seaton Hiking Trail details from the Ontario Trails Council; Seaton Paramedic Response Station and Seaton Village Long-Term Care details from the Region of Durham. Designated school sites are reserved on the City's map &mdash; final confirmation depends on the school boards and Ministry of Education funding, and a school may be built years after homes are occupied, or may not proceed. This is an illustrative, schematic map: it is not to scale, and positions and boundaries are simplified and approximate. All plans, dates, and projects are subject to change by the City, Region, school boards, and builders &mdash; verify details before making decisions. Builder communities, deposit structures and joint-venture details are from Team Rajpal's Ultimate Seaton Builder Comparison Guide; deposits are set per release and change, so confirm your actual schedule before signing.</p>
+<p class="sources"><strong>Sources &amp; notes:</strong> Community facts from the City of Pickering &mdash; Seaton Community page (pickering.ca) and the City's official Seaton Community Map (August 15, 2025); Seaton Recreation Complex &amp; Library status from letstalkpickering.ca/seaton; Seaton Hiking Trail details from the Ontario Trails Council; Seaton Village Long-Term Care and the Seaton Paramedic Response Station from the Region of Durham; builder communities and joint-venture details from Team Rajpal's Ultimate Seaton Builder Comparison Guide. Base map &copy; OpenStreetMap contributors; satellite imagery &copy; Esri. Markers with a street address are placed at that address; markers for future or designated sites are placed at the corner or block the City describes and are approximate. Designated school sites are lands reserved on the City's map &mdash; final confirmation depends on the school boards and Ministry of Education funding, and a school may be built years after homes are occupied, or may not proceed. All plans, dates, and projects are subject to change &mdash; verify before making decisions.</p>
 <div class="brand-foot">World Class Service &middot; World Class Results<br>Team Rajpal &middot; Re/Max Key2 Real Estate, Brokerage &middot; Seaton, Pickering, Ontario</div>
 </div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-const SCHOOL_CAVEAT = " This site is reserved on the City's official Seaton Community Map (Aug 2025); final confirmation depends on the school boards and Ministry of Education funding - a school may be built years after homes are occupied, or may not proceed.";
-const zones = {
-corridor:{name:"Pickering Innovation Corridor (Neighbourhood 21)",tagClass:"build",tagText:"Employment lands",color:"#004D9A",
-blurb:"Seaton's prestige employment area along Highway 7 and the 407. The City plans up to 35,000 jobs in Seaton at full build-out, with the majority of job creation planned within this corridor, plus population-serving jobs (retail, office, personal services) throughout the community. Source: City of Pickering."},
-mtpleasant:{name:"Mount Pleasant (Neighbourhood 18)",tagClass:"zone-tag",tagText:"Seaton neighbourhood",color:"#5F8A45",
-blurb:"Seaton's west-central neighbourhood, near the historic hamlet of Whitevale and the West Duffins Creek corridor. Much of Mount Pleasant is still to come - the City's map shows large future-residential lands here, several designated school sites, and active-recreation lands along the valley."},
-thompsons:{name:"Thompson's Corners (Neighbourhood 20)",tagClass:"zone-tag",tagText:"Seaton neighbourhood",color:"#C1922E",
-blurb:"Seaton's northeast neighbourhood, closest to Highway 7, the 407, and the Innovation Corridor employment lands. Home construction is already underway in the Elsa-Storry Avenue area (the Seatonville community), with more phases and designated school sites to come."},
-wilson:{name:"Wilson Meadows (Neighbourhood 19)",tagClass:"zone-tag",tagText:"Seaton neighbourhood",color:"#3E76B4",
-blurb:"A centre-east Seaton neighbourhood that spans both sides of Alexander Knox Road. Two designated elementary school sites sit on its north side, near the Hollyberry Green phases. Several builder communities are active here - Seaton Whitevale, Seaton Winding Woods and Seaton Mulberry - with the future Dave Ryan Community Park and the Seaton Village long-term care home along Alexander Knox Road."},
-brocktaunton:{name:"Brock-Taunton (Neighbourhood 17)",tagClass:"zone-tag",tagText:"Seaton neighbourhood",color:"#BE5B44",
-blurb:"Seaton's east-side neighbourhood along Brock Road, with quick access to the Brock Road interchange at Highway 407. The City's map shows future mixed-use lands concentrated along Brock Road here - planned as Seaton's main mixed-use spine."},
-lamoreaux:{name:"Lamoreaux (Neighbourhood 16)",tagClass:"zone-tag",tagText:"Seaton neighbourhood",color:"#7568B2",
-blurb:"Seaton's south-central neighbourhood, spanning both sides of Taunton Road down to the Duffin Heights boundary, and one of its most built-out areas with active construction around Burkholder Drive. The community's first two new elementary schools, Rick Johnson Memorial Park, and several builder communities sit in the portion south of Taunton. Source: City of Pickering Seaton Community Map (Aug 2025)."}
+const CAT = {
+ school:{c:"#6B4FA1",label:"Schools"},
+ park:{c:"#3F7A38",label:"Parks & trails"},
+ rec:{c:"#004D9A",label:"Community & recreation"},
+ shop:{c:"#C1762E",label:"Shops & plazas"},
+ care:{c:"#0E7C86",label:"Health & care"},
+ transit:{c:"#55606B",label:"Transit & roads"},
+ builder:{c:"#DC1C2E",label:"Builder community"}
 };
-const pins = [
-{id:"ddsb",x:546,y:511,status:"open",name:"Josiah Henson Public School (DDSB elementary)",blurb:"The Durham District School Board's elementary school at the northwest corner of Burkholder Drive and Azalea Avenue, south of Taunton in Lamoreaux, which the board planned to open in fall 2025. Source: City of Pickering; school name per the City's official Seaton map."},
-{id:"paramedic",x:862,y:250,status:"open",name:"Seaton Paramedic Response Station & Training Facility",blurb:"Opened October 28, 2025 by the Region of Durham at 1890 Fifth Concession Road, just east of Seaton - a LEED Silver facility with a training centre and storage for six ambulances, built to improve emergency response times as Seaton and north Pickering grow. Sources: Region of Durham; City of Pickering Seaton map."},
-{id:"access407",x:434,y:99,status:"open",name:"Highway 407 & Highway 7 access",blurb:"Highway 7 runs along Seaton's northern edge and the 407 runs through the Innovation Corridor just south of it. Full 407 interchanges at Brock Road and Whites Road serve Seaton today, with another planned at Peter Matthews Drive. The Province has also announced the widening of Highway 7. Source: City of Pickering."},
-{id:"gobus",x:864,y:115,status:"open",name:"GO Bus Carpool",blurb:"A GO Bus carpool facility is shown near Brock Road and the 407 in the northeast corner of Seaton on the City's official Seaton Community Map (August 2025)."},
-{id:"trail",x:186,y:300,status:"open",name:"Seaton Hiking Trail & Whitevale",blurb:"An approximately 11 km hiking trail along West Duffins Creek, created in the early 1970s as an interpretive trail, running past the historic hamlet of Whitevale. Over half of Seaton's 7,000+ acres is preserved as open space, and this valley is the spine of it - already here today. Sources: Ontario Trails Council; City of Pickering."},
-{id:"activerec",x:296,y:362,status:"open",name:"Active recreation lands - Mount Pleasant",blurb:"The City's map designates a large active-recreation block in south Mount Pleasant, along the West Duffins valley lands. Source: City of Pickering Seaton Community Map (Aug 2025)."},
-{id:"rickjohnson",x:495,y:574,status:"open",name:"Rick Johnson Memorial Park",blurb:"A park in the Burkholder Drive area south of Taunton Road, shown in the built/under-construction category on the City's official Seaton Community Map (Aug 2025)."},
-{id:"cemetery",x:365,y:250,status:"open",name:"Cemetery - Whitevale Road",blurb:"The City's Seaton Community Map shows a cemetery on Whitevale Road, part of the area's long pre-Seaton history alongside the hamlets of Whitevale, Green River, and Brougham."},
-{id:"parksnet",x:640,y:270,status:"open",name:"Neighbourhood parks & greens",blurb:"Seaton's plan weaves dozens of small parks and greens through its neighbourhoods - Sea Mist Park, Winding Woods Green, Hollyberry Green, Scarlett Green, Heartwood Green, Zircon Green, Zinnia Gardens, Foxtail Green, Smoothwater Green, Hawkridge Green and more appear on the City's map, some already built and more coming as each phase completes. Source: City of Pickering Seaton Community Map (Aug 2025)."},
-{id:"dcdsb",x:546,y:549,status:"build",name:"New Catholic elementary school (DCDSB)",blurb:"The Durham Catholic District School Board plans to open a new elementary school in September 2026, on the north side of Hibiscus Drive between Sapphire Drive and Burkholder Drive - south of Taunton in Lamoreaux. Source: City of Pickering."},
-{id:"ltc",x:700,y:233,status:"build",name:"Seaton Village Long-Term Care Home",blurb:"A 200-bed Region of Durham long-term care home under construction at 1550 Alexander Knox Road, projected to open in fall 2026 - a three-storey home with dementia-friendly common areas and specialized behavioural units. Sources: Region of Durham; City of Pickering Seaton map."},
-{id:"phcc",x:900,y:60,status:"build",name:"Pickering Heritage & Community Centre",blurb:"Located east of Seaton on the upper site of the Pickering Museum Village, at Highway 7 and Greenwood Road. It brings a museum, library, and community centre together under one roof. Construction has begun, with opening anticipated in 2026. Source: City of Pickering."},
-{id:"reccomplex",x:538,y:278,status:"plan",name:"Seaton Recreation Complex & Library",blurb:"Planned at the southeast corner of the re-aligned Whitevale Road (Alexander Knox) and Sideline 24 (Burkholder Drive). Envisioned to include a 25-metre indoor pool with warm-water leisure tank, fitness centre, gymnasium, two indoor ice pads, walking track, and a full-service library branch. Currently in detailed design; the City plans to tender construction in spring 2027. Sources: City of Pickering; letstalkpickering.ca."},
-{id:"reccentre2",x:840,y:150,status:"plan",name:"Proposed Recreation Centre - Brock Road",blurb:"Separate from the Seaton Recreation Complex & Library, the City's map marks a second proposed recreation centre near Brock Road in the northeast. Proposed - plans may change. Source: City of Pickering Seaton Community Map (Aug 2025)."},
-{id:"park",x:770,y:262,status:"plan",name:"Dave Ryan Community Park (future)",blurb:"A future community park at the southeast corner of Mulberry Lane and Alexander Knox Road, planned to include a full-size lit soccer pitch, lit ball diamond, tennis/pickleball courts, half-court basketball, playgrounds, a water play area, parking, and a washroom/fieldhouse. Source: City of Pickering."},
-{id:"plazaB",x:575,y:268,status:"plan",name:"Commercial plaza - Alexander Knox & Peter Matthews",blurb:"A commercial plaza is planned at the southwest corner of Alexander Knox Road and Peter Matthews Drive, with uses planned to include a grocery store, daycare, pharmacy, and restaurants. The applicant anticipates construction starting in 2026. Source: City of Pickering."},
-{id:"plazaA",x:558,y:466,status:"plan",name:"Commercial plaza - Taunton Rd",blurb:"The City is reviewing a proposal for a commercial plaza on the south side of Taunton Road between Burkholder Drive and Peter Matthews Drive. The applicant anticipates construction starting spring 2026, with uses expected to include a grocery store, banks, and restaurants. Source: City of Pickering."},
-{id:"mixedbrock",x:790,y:300,status:"plan",name:"Brock Road mixed-use corridor",blurb:"Lands along Brock Road are shown as future mixed use on the City's map - commercial, apartments and/or townhouses. This is where Seaton's main-street energy is planned to concentrate as the community matures. Source: City of Pickering Seaton Community Map (Aug 2025)."},
-{id:"mixedwest",x:470,y:300,status:"plan",name:"Future mixed-use node - central Seaton",blurb:"Lands near Whites Road and the Alexander Knox corridor are designated for future mixed use - commercial, apartments and/or townhouses - bringing shops and services into walking distance as phases build out. Source: City of Pickering Seaton Community Map (Aug 2025)."},
-{id:"ss1",x:443,y:171,status:"school",name:"Designated secondary school site - north Seaton",blurb:"Land set aside for a future secondary school (high school) in north-central Seaton, between Whites Road and Peter Matthews Drive." + SCHOOL_CAVEAT},
-{id:"ss2",x:425,y:392,status:"school",name:"Designated secondary school site - south-central Seaton",blurb:"Land set aside for a future secondary school (high school) in south-central Seaton, near the Whites Road and Elizabeth MacKenzie Drive area." + SCHOOL_CAVEAT},
-{id:"ss3",x:840,y:196,status:"school",name:"Designated secondary school site - Brock Road",blurb:"Land set aside for a future secondary school (high school) near Brock Road in the northeast, close to the proposed recreation centre." + SCHOOL_CAVEAT},
-{id:"se1",x:219,y:203,status:"school",name:"Designated elementary school site - northwest Mount Pleasant",blurb:"Land set aside for a future elementary school in the northwest of Mount Pleasant." + SCHOOL_CAVEAT},
-{id:"se2",x:340,y:203,status:"school",name:"Designated elementary school site - north Mount Pleasant",blurb:"Land set aside for a future elementary school in north Mount Pleasant." + SCHOOL_CAVEAT},
-{id:"se3",x:305,y:253,status:"school",name:"Designated elementary school site - west Mount Pleasant",blurb:"Land set aside for a future elementary school in west Mount Pleasant, near Whitevale Road." + SCHOOL_CAVEAT},
-{id:"se4",x:408,y:304,status:"school",name:"Designated elementary school site - central Mount Pleasant",blurb:"Land set aside for a future elementary school in central Mount Pleasant, near Whites Road." + SCHOOL_CAVEAT},
-{id:"se5",x:383,y:340,status:"school",name:"Designated elementary school site - south Mount Pleasant",blurb:"Land set aside for a future elementary school in south Mount Pleasant." + SCHOOL_CAVEAT},
-{id:"se6",x:615,y:244,status:"school",name:"Designated elementary school site - Wilson Meadows (north)",blurb:"Land set aside for a future elementary school in Wilson Meadows, on the north side of Alexander Knox Road near the Hollyberry Green phases." + SCHOOL_CAVEAT},
-{id:"se7",x:652,y:236,status:"school",name:"Designated elementary school site - Wilson Meadows",blurb:"Land set aside for a future elementary school in Wilson Meadows, north of Alexander Knox Road. Wilson Meadows spans both sides of Alexander Knox - its school lands sit on the north side." + SCHOOL_CAVEAT},
-{id:"se8",x:649,y:184,status:"school",name:"Designated elementary school site - west Thompson's Corners",blurb:"Land set aside for a future elementary school in the west of Thompson's Corners." + SCHOOL_CAVEAT},
-{id:"se9",x:690,y:210,status:"school",name:"Designated elementary school site - Thompson's Corners",blurb:"Land set aside for a future elementary school in Thompson's Corners, near the Elsa-Storry Avenue phases already under construction." + SCHOOL_CAVEAT},
-{id:"se10",x:512,y:365,status:"school",name:"Designated elementary school site - Lamoreaux north",blurb:"Land set aside for a future elementary school in the north of Lamoreaux, adding to the two schools already open or opening south of Taunton." + SCHOOL_CAVEAT},
-{id:"c_seatonville",x:780,y:220,status:"builder",name:"Seatonville - Thompson's Corners",blurb:"A multi-builder community in Thompson's Corners: Arista Homes, DECO Homes, Fieldgate Homes, OPUS Homes, Mattamy Homes and others. Several Seaton communities are joint ventures between three to five builders sharing one master plan - so the home next door may carry a different builder's warranty than yours. Source: Team Rajpal Seaton Builder Guide."},
-{id:"c_whitevale",x:625,y:262,status:"builder",name:"Seaton Whitevale - Wilson Meadows",blurb:"Built by Mattamy Homes. Mattamy's deposit is due in full within about 120 days over 4 instalments (plus a further instalment on premium lots), totalling roughly 10% of price. Source: Team Rajpal Seaton Builder Guide."},
-{id:"c_windingwoods",x:690,y:256,status:"builder",name:"Seaton Winding Woods - Wilson Meadows",blurb:"Built by Fieldgate Homes. Fieldgate runs the longest common deposit runway of the major Seaton builders at about 210 days over 4-8 instalments, totalling roughly 10-12% of price. Source: Team Rajpal Seaton Builder Guide."},
-{id:"c_mulberry",x:752,y:288,status:"builder",name:"Seaton Mulberry - Wilson Meadows",blurb:"Built by Mattamy Homes, near the future Dave Ryan Community Park at Mulberry Lane and Alexander Knox Road. Source: Team Rajpal Seaton Builder Guide."},
-{id:"c_greenwood",x:752,y:340,status:"builder",name:"Greenwood Seaton - Brock-Taunton",blurb:"A joint community by OPUS Homes and DECO Homes, near the Brock Road and Taunton Road junction. OPUS deposits run about 190 days over 5 instalments; DECO offers a staged option running a full 360 days. Source: Team Rajpal Seaton Builder Guide."},
-{id:"c_fieldgate12",x:440,y:390,status:"builder",name:"Fieldgate Seaton Ph 1 & 2 - Lamoreaux",blurb:"Built by Fieldgate Homes in the north of Lamoreaux. Source: Team Rajpal Seaton Builder Guide."},
-{id:"c_newseaton",x:490,y:478,status:"builder",name:"New Seaton - Lamoreaux / Whites Rd",blurb:"A joint community by Brookfield Residential, Aspen Ridge Homes and TowerHill Homes. Brookfield asks for the deposit inside about 120 days but at a lower share of price (roughly 7-9%); Aspen Ridge runs about 150 days over 4 equal instalments. Source: Team Rajpal Seaton Builder Guide."},
-{id:"c_bloom",x:500,y:522,status:"builder",name:"Seaton / Bloom / Seaton Taunton - Lamoreaux",blurb:"Built by Mattamy Homes, south of Taunton Road near the two new elementary schools. Source: Team Rajpal Seaton Builder Guide."},
-{id:"c_seatonsouth",x:568,y:562,status:"builder",name:"Seaton South - Lamoreaux",blurb:"A joint community by OPUS Homes and DECO Homes in south Lamoreaux, near Peter Matthews Drive. Source: Team Rajpal Seaton Builder Guide."},
-{id:"c_mainstreet",x:664,y:556,status:"builder",name:"Main Street Seaton - Duffin Heights",blurb:"Worth knowing: this community carries the Seaton name but sits in Duffin Heights (N15), not on the Seaton lands - different neighbourhood, different context. Source: Team Rajpal Seaton Builder Guide."}
+const STATUS = { open:"Open now", building:"Under construction", proposed:"Proposed / designated" };
+const SCH = " These are lands reserved for a school on the City's official Seaton Community Map. Final confirmation depends on the school boards and Ministry of Education funding, so a school may be built years after the homes around it, or may not proceed at all.";
+
+const places = [
+// ---------- SCHOOLS ----------
+{id:"ddsb",lat:43.8728,lng:-79.1204,cat:"school",status:"open",name:"Josiah Henson Public School",
+ txt:"Durham District School Board elementary school at the northwest corner of Burkholder Drive and Azalea Avenue, south of Taunton. The board planned to open it in fall 2025 &mdash; the first new public school built for Seaton families. Approximate placement at the described corner. Source: City of Pickering."},
+{id:"dcdsb",lat:43.8722,lng:-79.1142,cat:"school",status:"building",name:"New Catholic elementary school (DCDSB)",
+ txt:"Durham Catholic District School Board elementary school planned to open September 2026, on the north side of Hibiscus Drive between Sapphire Drive and Burkholder Drive. Approximate placement on the described block. Source: City of Pickering."},
+{id:"sec_n",lat:43.9060,lng:-79.1180,cat:"school",status:"proposed",name:"Designated secondary school site &mdash; north Seaton",
+ txt:"Land set aside for a future secondary school (high school) in north Seaton." + SCH},
+{id:"sec_brock",lat:43.9018,lng:-79.0862,cat:"school",status:"proposed",name:"Designated secondary school site &mdash; Brock Road",
+ txt:"Land set aside for a future secondary school (high school) near Brock Road and Fifth Concession, alongside a proposed recreation centre and an elementary site." + SCH},
+{id:"sec_s",lat:43.8790,lng:-79.1265,cat:"school",status:"proposed",name:"Designated secondary school site &mdash; south-central Seaton",
+ txt:"Land set aside for a future secondary school (high school) in south-central Seaton, in the Whites Road / Elizabeth MacKenzie Drive area." + SCH},
+{id:"el_wm1",lat:43.9012,lng:-79.1140,cat:"school",status:"proposed",name:"Designated elementary school site &mdash; Wilson Meadows (north)",
+ txt:"Land set aside for a future elementary school in Wilson Meadows, on the north side of Alexander Knox Road near the Hollyberry Green phases." + SCH},
+{id:"el_wm2",lat:43.8996,lng:-79.1105,cat:"school",status:"proposed",name:"Designated elementary school site &mdash; Wilson Meadows",
+ txt:"A second school site in Wilson Meadows, also north of Alexander Knox Road. Wilson Meadows spans both sides of Alexander Knox &mdash; its school lands sit on the north side." + SCH},
+{id:"el_tc1",lat:43.9078,lng:-79.1042,cat:"school",status:"proposed",name:"Designated elementary school site &mdash; Thompson's Corners",
+ txt:"Land set aside for a future elementary school in Thompson's Corners, near the Elsa-Storry Avenue phases already under construction." + SCH},
+{id:"el_tc2",lat:43.9052,lng:-79.0955,cat:"school",status:"proposed",name:"Designated elementary school site &mdash; east Thompson's Corners",
+ txt:"Land set aside for a future elementary school in the east of Thompson's Corners." + SCH},
+{id:"el_mp1",lat:43.9095,lng:-79.1345,cat:"school",status:"proposed",name:"Designated elementary school site &mdash; north Mount Pleasant",
+ txt:"Land set aside for a future elementary school in the north of Mount Pleasant." + SCH},
+{id:"el_mp2",lat:43.8975,lng:-79.1400,cat:"school",status:"proposed",name:"Designated elementary school site &mdash; west Mount Pleasant",
+ txt:"Land set aside for a future elementary school in west Mount Pleasant, toward Whitevale Road." + SCH},
+{id:"el_mp3",lat:43.8905,lng:-79.1300,cat:"school",status:"proposed",name:"Designated elementary school site &mdash; central Mount Pleasant",
+ txt:"Land set aside for a future elementary school in central Mount Pleasant." + SCH},
+{id:"el_lam",lat:43.8800,lng:-79.1160,cat:"school",status:"proposed",name:"Designated elementary school site &mdash; Lamoreaux",
+ txt:"Land set aside for a future elementary school in Lamoreaux, adding to the two schools already open or opening south of Taunton." + SCH},
+{id:"el_brock",lat:43.9032,lng:-79.0872,cat:"school",status:"proposed",name:"Designated elementary school site &mdash; Brock Road",
+ txt:"Land set aside for a future elementary school near Brock Road and Fifth Concession." + SCH},
+
+// ---------- PARKS & TRAILS ----------
+{id:"trail_n",lat:43.8867878,lng:-79.1625452,cat:"park",status:"open",name:"Seaton Hiking Trail &mdash; Whitevale trailhead",
+ txt:"The main trailhead at Whitevale Park, in the historic hamlet of Whitevale. The Seaton Hiking Trail runs roughly 11 km along West Duffins Creek and was created in the early 1970s as an interpretive trail. Over half of Seaton's 7,000+ acres is preserved as open space, and this valley is the spine of it. Sources: Ontario Trails Council; City of Pickering."},
+{id:"trail_s",lat:43.8605154,lng:-79.1026315,cat:"park",status:"open",name:"Seaton Hiking Trail &mdash; south trailhead",
+ txt:"The southern access to the Seaton Trail off Third Concession Road, with parking and off-leash dog areas. Source: Ontario Trails Council."},
+{id:"rickjohnson",lat:43.87048,lng:-79.11622,cat:"park",status:"open",name:"Rick Johnson Memorial Park",
+ txt:"An established park off Sapphire Drive south of Taunton, with a soccer field and playground &mdash; one of the community's built parks. Source: City of Pickering Seaton Community Map."},
+{id:"daveryan",lat:43.8997,lng:-79.1052,cat:"park",status:"proposed",name:"Dave Ryan Community Park (future)",
+ txt:"Planned for the southeast corner of Mulberry Lane and Alexander Knox Road, in Wilson Meadows. The City's plans include a full-size lit soccer pitch, a lit ball diamond, tennis and pickleball courts, half-court basketball, playgrounds, a water play area, parking, and a washroom/fieldhouse. Not built yet &mdash; placement is at the described corner. Source: City of Pickering."},
+{id:"districtpark",lat:43.9160,lng:-79.1560,cat:"park",status:"proposed",name:"Future district park &mdash; northwest Seaton",
+ txt:"The City's map designates lands in Seaton's northwest for a district-scale park, larger than the neighbourhood greens woven through the community. Approximate. Source: City of Pickering Seaton Community Map."},
+{id:"greens",lat:43.8935,lng:-79.1090,cat:"park",status:"open",name:"Neighbourhood parks &amp; greens",
+ txt:"Seaton's plan threads dozens of small parks and greens through its neighbourhoods &mdash; Sea Mist Park, Winding Woods Green, Hollyberry Green, Scarlett Green, Heartwood Green, Zircon Green, Zinnia Gardens, Foxtail Green, Smoothwater Green, Hawkridge Green and more. Some are built; more arrive as each phase completes. Source: City of Pickering Seaton Community Map."},
+
+// ---------- COMMUNITY & RECREATION ----------
+{id:"reccomplex",lat:43.8943,lng:-79.1226,cat:"rec",status:"proposed",name:"Seaton Recreation Complex &amp; Library",
+ txt:"Planned for the southeast corner of the re-aligned Whitevale Road (Alexander Knox) and Sideline 24 (future Burkholder Drive). Envisioned to include a 25-metre indoor pool with a warm-water leisure tank, fitness centre, gymnasium, two indoor ice pads, a walking track, and a full-service library branch. Currently in detailed design; the City plans to tender construction in spring 2027. Sources: City of Pickering; letstalkpickering.ca."},
+{id:"reccentre2",lat:43.9005,lng:-79.0855,cat:"rec",status:"proposed",name:"Proposed recreation centre &mdash; Brock Road",
+ txt:"Separate from the Seaton Recreation Complex, the City's map marks a second proposed recreation centre near Brock Road in the northeast. Proposed only &mdash; plans may change. Source: City of Pickering Seaton Community Map."},
+{id:"phcc",lat:43.9257754,lng:-79.0748442,cat:"rec",status:"open",name:"Dorsay Community &amp; Heritage Centre (Pickering Heritage &amp; Community Centre)",
+ txt:"Just east of Seaton at the Pickering Museum Village site, bringing a museum, library, and community centre together under one roof in a zero-carbon building. Long referred to as the Pickering Heritage &amp; Community Centre; it opened to the community in 2026. Source: City of Pickering."},
+
+// ---------- SHOPS & PLAZAS ----------
+{id:"plaza_ak",lat:43.9004,lng:-79.1110,cat:"shop",status:"proposed",name:"Commercial plaza &mdash; Alexander Knox &amp; Peter Matthews",
+ txt:"A plaza is planned at the southwest corner of Alexander Knox Road and Peter Matthews Drive, with uses expected to include a grocery store, daycare, pharmacy, and restaurants. The applicant anticipates construction starting in 2026. Approximate placement at the described corner. Source: City of Pickering."},
+{id:"plaza_taunton",lat:43.8752,lng:-79.1158,cat:"shop",status:"proposed",name:"Commercial plaza &mdash; Taunton Road",
+ txt:"The City is reviewing a proposal for a plaza on the south side of Taunton Road between Burkholder Drive and Peter Matthews Drive, expected to include a grocery store, banks, and restaurants. The applicant anticipates construction starting spring 2026. Source: City of Pickering."},
+{id:"mixedbrock",lat:43.8905,lng:-79.0905,cat:"shop",status:"proposed",name:"Brock Road mixed-use corridor",
+ txt:"Lands along Brock Road are designated future mixed use &mdash; commercial, apartments and/or townhouses. This is where Seaton's main-street energy is planned to concentrate as the community matures. Source: City of Pickering Seaton Community Map."},
+{id:"seatoncentre",lat:43.8698082,lng:-79.0847247,cat:"shop",status:"open",name:"Seaton Centre &amp; Team Rajpal's office",
+ txt:"The existing plaza at 2460 Brock Road, with everyday retail and services &mdash; and Team Rajpal's office. We're the only real estate team with a physical office in Seaton, which is why we hear about phase releases and school timelines here first."},
+
+// ---------- HEALTH & CARE ----------
+{id:"ltc",lat:43.9008881,lng:-79.1067861,cat:"care",status:"building",name:"Seaton Village Long-Term Care Home",
+ txt:"A 200-bed Region of Durham long-term care home under construction at 1550 Alexander Knox Road &mdash; three storeys, with dementia-friendly common areas and specialized behavioural units. The Region projects it will open in fall 2026. Source: Region of Durham."},
+{id:"paramedic",lat:43.9044618,lng:-79.0892073,cat:"care",status:"open",name:"Seaton Paramedic Response Station &amp; Training Facility",
+ txt:"Opened October 28, 2025 by the Region of Durham at 1890 Fifth Concession Road &mdash; a LEED Silver facility with a training centre, storage for six ambulances, and a driver training pad, built to improve response times as Seaton and north Pickering grow. Source: Region of Durham."},
+
+// ---------- TRANSIT & ROADS ----------
+{id:"hwy407brock",lat:43.9145,lng:-79.0975,cat:"transit",status:"open",name:"Highway 407 &mdash; Brock Road interchange",
+ txt:"One of two full 407 interchanges serving Seaton today. Highway 7 runs along Seaton's northern edge, with the 407 just south of it through the Innovation Corridor. Source: City of Pickering."},
+{id:"hwy407whites",lat:43.9128,lng:-79.1420,cat:"transit",status:"open",name:"Highway 407 &mdash; Whites Road interchange",
+ txt:"The western 407 interchange serving Seaton. A third interchange is planned at Peter Matthews Drive, and the Province has announced the widening of Highway 7. Source: City of Pickering."},
+{id:"gobus",lat:43.9130,lng:-79.0930,cat:"transit",status:"open",name:"GO Bus carpool lot",
+ txt:"A GO Bus carpool facility near Brock Road and the 407 in Seaton's northeast, shown on the City's official Seaton Community Map (August 2025)."},
+{id:"brougham",lat:43.9200533,lng:-79.1082784,cat:"transit",status:"open",name:"Brougham (historic hamlet)",
+ txt:"One of three historic hamlets within or beside Seaton, along with Whitevale and Green River. Brougham sits at Highway 7 in the north of the community."},
+{id:"greenriver",lat:43.89946,lng:-79.1891640,cat:"transit",status:"open",name:"Green River (historic hamlet)",
+ txt:"A historic hamlet at Seaton's western edge, on the far side of the West Duffins valley."},
+
+// ---------- BUILDER COMMUNITIES ----------
+{id:"c_seatonville",lat:43.9023685,lng:-79.0907756,cat:"builder",status:"building",name:"Seatonville",
+ txt:"A multi-builder community in the northeast: Arista Homes, DECO Homes, Fieldgate Homes, OPUS Homes, Mattamy Homes and others. Several Seaton communities are joint ventures between three to five builders sharing one master plan &mdash; so the home next door may carry a different builder's warranty than yours. Source: Team Rajpal Seaton Builder Guide."},
+{id:"c_greenwood",lat:43.9018788,lng:-79.097957,cat:"builder",status:"building",name:"Greenwood Seaton",
+ txt:"A joint community by OPUS Homes and DECO Homes in the northeast, near the shared presentation centre on Whitevale Road. Source: Team Rajpal Seaton Builder Guide."},
+{id:"c_windingwoods",lat:43.90137,lng:-79.09755,cat:"builder",status:"building",name:"Seaton Winding Woods &mdash; Fieldgate",
+ txt:"Fieldgate Homes' Seaton community. This marker is Fieldgate's Seaton sales office at 1705 Whitevale Road Unit 1, which is the reliable address to visit &mdash; homes in the community sit nearby. Source: Team Rajpal Seaton Builder Guide."},
+{id:"c_mulberry",lat:43.8941081,lng:-79.1045058,cat:"builder",status:"building",name:"Seaton Mulberry &mdash; Mattamy",
+ txt:"Mattamy Homes' community around Mulberry Lane, next to the future Dave Ryan Community Park and the Alexander Knox corridor. Source: Team Rajpal Seaton Builder Guide."},
+{id:"c_whitevale",lat:43.8757742,lng:-79.1189980,cat:"builder",status:"building",name:"Seaton Whitevale &mdash; Mattamy",
+ txt:"Mattamy Homes. This marker is the sales centre at 1075 Taunton Road. Note that several Seaton sales centres sit well outside the community they sell, so ask us where the actual homes are before you assume the location. Source: Team Rajpal Seaton Builder Guide."},
+{id:"c_newseaton",lat:43.8759294,lng:-79.1308652,cat:"builder",status:"building",name:"New Seaton &mdash; Brookfield, Aspen Ridge &amp; TowerHill",
+ txt:"A three-builder joint community. This marker is the New Seaton Presentation Centre at 2820 Sideline 26, off Taunton Road. Source: Team Rajpal Seaton Builder Guide."},
+{id:"c_fieldgate12",lat:43.8800,lng:-79.1195,cat:"builder",status:"building",name:"Fieldgate Seaton Ph 1 &amp; 2",
+ txt:"Fieldgate Homes' earlier Seaton phases, in the Burkholder Drive area. Approximate &mdash; ask us for the exact streets currently releasing. Source: Team Rajpal Seaton Builder Guide."},
+{id:"c_bloom",lat:43.8715,lng:-79.1185,cat:"builder",status:"building",name:"Seaton &middot; Bloom &middot; Seaton Taunton &mdash; Mattamy",
+ txt:"Mattamy Homes, south of Taunton Road near the two new elementary schools. Approximate. Source: Team Rajpal Seaton Builder Guide."},
+{id:"c_seatonsouth",lat:43.8700,lng:-79.1120,cat:"builder",status:"building",name:"Seaton South &mdash; OPUS &amp; DECO",
+ txt:"A joint community by OPUS Homes and DECO Homes in the south, toward Peter Matthews Drive. Approximate. Source: Team Rajpal Seaton Builder Guide."},
+{id:"c_mainstreet",lat:43.8680,lng:-79.0950,cat:"builder",status:"building",name:"Main Street Seaton &mdash; Duffin Heights",
+ txt:"Worth knowing: this community carries the Seaton name but sits in Duffin Heights, not on the Seaton lands &mdash; a different neighbourhood with a different context. Approximate. Source: Team Rajpal Seaton Builder Guide."}
 ];
-const statusColors = { open:"#7C9473", build:"#DC1C2E", plan:"#55606B", school:"#6B4FA1", builder:"#0E7C86" };
-const statusLabels = { open:"Open now", build:"Under construction", plan:"Planned", school:"Designated school site", builder:"Builder community" };
-const pinLayer = document.getElementById('pins');
+</script>
+<script>
+const map = L.map('map', { scrollWheelZoom:false }).setView([43.8955, -79.1150], 12);
+const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+  maxZoom:19, attribution:'&copy; OpenStreetMap contributors'}).addTo(map);
+const sat = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{
+  maxZoom:19, attribution:'Imagery &copy; Esri'});
+L.control.layers({ "Map":osm, "Satellite":sat }, null, {position:'topright'}).addTo(map);
+map.on('click', ()=>{});
+
 const infoPanel = document.getElementById('infoPanel');
-const svgNS = "http://www.w3.org/2000/svg";
-pins.forEach(p => {
-  const g = document.createElementNS(svgNS,"g");
-  g.setAttribute("class","pin"); g.setAttribute("data-id",p.id); g.setAttribute("data-status",p.status);
-  const halo = document.createElementNS(svgNS,"circle");
-  halo.setAttribute("cx",p.x); halo.setAttribute("cy",p.y); halo.setAttribute("r",16);
-  halo.setAttribute("class","halo"); halo.setAttribute("fill",statusColors[p.status]); g.appendChild(halo);
-  if(p.status === "build"){
-    const ring = document.createElementNS(svgNS,"circle");
-    ring.setAttribute("cx",p.x); ring.setAttribute("cy",p.y); ring.setAttribute("r",8);
-    ring.setAttribute("fill","none"); ring.setAttribute("stroke",statusColors.build);
-    ring.setAttribute("stroke-width","2"); ring.setAttribute("class","pulse-ring"); g.appendChild(ring);
-  }
-  const c = document.createElementNS(svgNS,"circle");
-  const r = p.status === "school" ? 7 : (p.status === "builder" ? 9 : 8);
-  c.setAttribute("cx",p.x); c.setAttribute("cy",p.y); c.setAttribute("r",r);
-  if(p.status === "plan"){
-    c.setAttribute("fill","#FFFFFF"); c.setAttribute("stroke",statusColors.plan);
-    c.setAttribute("stroke-width","1.8"); c.setAttribute("stroke-dasharray","3 2.5");
-  } else {
-    c.setAttribute("fill",statusColors[p.status]); c.setAttribute("stroke","#FFFFFF"); c.setAttribute("stroke-width","2");
-  }
-  g.appendChild(c); pinLayer.appendChild(g);
-  g.addEventListener("click", () => select(p.id,"pin"));
-});
-document.querySelectorAll(".zone").forEach(z => { z.addEventListener("click", () => select(z.getAttribute("data-id"),"zone")); });
-function clearActive(){ document.querySelectorAll(".zone.active, .pin.active").forEach(el => el.classList.remove("active")); }
-function select(id, kind){
-  clearActive();
-  let data, tagClass, tagText, color;
-  if(kind === "zone"){
-    data = zones[id];
-    document.querySelector('.zone[data-id="'+id+'"]').classList.add("active");
-    tagClass = data.tagClass; tagText = data.tagText; color = data.color;
-  } else {
-    data = pins.find(p => p.id === id);
-    document.querySelector('.pin[data-id="'+id+'"]').classList.add("active");
-    tagClass = data.status; tagText = statusLabels[data.status]; color = statusColors[data.status];
-  }
-  infoPanel.style.borderLeftColor = color;
-  infoPanel.innerHTML = '<span class="tag '+tagClass+'">'+tagText+'</span><h3>'+data.name+'</h3><p>'+data.blurb+'</p>';
+const markers = {};
+const group = L.featureGroup().addTo(map);
+
+function iconFor(p){
+  const c = CAT[p.cat].c;
+  const size = p.cat === 'builder' ? 20 : 17;
+  const inner = p.status === 'proposed'
+    ? 'background:#fff;border-color:'+c+';border-style:dashed;'
+    : 'background:'+c+';';
+  const cls = 'mk' + (p.status==='building' ? ' building' : '') + (p.status==='proposed' ? ' proposed' : '');
+  return L.divIcon({
+    className:'',
+    html:'<div class="'+cls+'" style="position:relative;width:'+size+'px;height:'+size+'px;color:'+c+';'+inner+'"></div>',
+    iconSize:[size,size], iconAnchor:[size/2,size/2]
+  });
 }
-document.getElementById('filters').addEventListener('click', (e) => {
+
+places.forEach(p => {
+  const m = L.marker([p.lat,p.lng], { icon: iconFor(p), title: p.name.replace(/&[a-z]+;/g,'') });
+  m.on('click', () => select(p.id));
+  m.addTo(group);
+  markers[p.id] = { marker:m, data:p };
+});
+map.fitBounds(group.getBounds().pad(0.06));
+
+function select(id){
+  const p = markers[id].data;
+  const c = CAT[p.cat].c;
+  infoPanel.style.borderLeftColor = c;
+  infoPanel.innerHTML =
+    '<div class="badges">'
+    + '<span class="badge b-'+p.status+'">'+STATUS[p.status]+'</span>'
+    + '<span class="badge" style="background:'+c+'1A;color:'+c+'">'+CAT[p.cat].label+'</span>'
+    + '</div>'
+    + '<h3>'+p.name+'</h3><p>'+p.txt+'</p>';
+  infoPanel.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+document.getElementById('filters').addEventListener('click', e => {
   const btn = e.target.closest('.chip'); if(!btn) return;
-  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
   btn.classList.add('active');
   const f = btn.getAttribute('data-f');
-  document.querySelectorAll('.pin').forEach(p => {
-    if(f === 'all' || p.getAttribute('data-status') === f){ p.classList.remove('hidden'); } else { p.classList.add('hidden'); }
+  group.clearLayers();
+  const shown = [];
+  places.forEach(p => {
+    if(f==='all' || p.cat===f){ markers[p.id].marker.addTo(group); shown.push(markers[p.id].marker); }
   });
+  if(shown.length){ map.fitBounds(L.featureGroup(shown).getBounds().pad(0.08)); }
 });
+
 const params = new URLSearchParams(window.location.search);
-const agent = params.get('agent');
-const name = params.get('name');
-if(agent || name){
-  const cta = document.getElementById('ctaLink');
+const agent = params.get('agent'); const nm = params.get('name');
+if(agent || nm){
   const q = [];
-  if(agent) q.push('agent=' + encodeURIComponent(agent));
-  if(name) q.push('name=' + encodeURIComponent(name));
-  cta.href = 'https://xerxes-pixel.github.io/north-pickering-home-fit-quiz/?' + q.join('&');
+  if(agent) q.push('agent='+encodeURIComponent(agent));
+  if(nm) q.push('name='+encodeURIComponent(nm));
+  document.getElementById('ctaLink').href = 'https://xerxes-pixel.github.io/north-pickering-home-fit-quiz/?'+q.join('&');
 }
 </script>
 </body>
