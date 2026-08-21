@@ -127,7 +127,7 @@ h1{font-family:Cambria,Georgia,serif;font-weight:500;font-size:clamp(28px,5vw,44
 </div>
 <a id="ctaLink" href="https://xerxes-pixel.github.io/north-pickering-home-fit-quiz/">Take the 2-min home-fit quiz</a>
 </div>
-<p class="sources"><strong>Sources &amp; notes:</strong> Community facts from the City of Pickering &mdash; Seaton Community page (pickering.ca) and the City's official Seaton Community Map (August 15, 2025); Seaton Recreation Complex &amp; Library status from letstalkpickering.ca/seaton; Seaton Hiking Trail details from the Ontario Trails Council; Seaton Village Long-Term Care and the Seaton Paramedic Response Station from the Region of Durham; builder communities and joint-venture details from Team Rajpal's Ultimate Seaton Builder Comparison Guide. Base map &copy; OpenStreetMap contributors; satellite imagery &copy; Esri. Markers with a street address are placed at that address; markers for future or designated sites are placed at the corner or block the City describes and are approximate. Designated school sites are lands reserved on the City's map &mdash; final confirmation depends on the school boards and Ministry of Education funding, and a school may be built years after homes are occupied, or may not proceed. All plans, dates, and projects are subject to change &mdash; verify before making decisions.</p>
+<p class="sources"><strong>Sources &amp; notes:</strong> Community facts from the City of Pickering &mdash; Seaton Community page (pickering.ca) and the City's official Seaton Community Map (August 15, 2025); Seaton Recreation Complex &amp; Library status from letstalkpickering.ca/seaton; Seaton Hiking Trail details from the Ontario Trails Council; Seaton Village Long-Term Care and the Seaton Paramedic Response Station from the Region of Durham; builder communities and joint-venture details from Team Rajpal's Ultimate Seaton Builder Comparison Guide. Base map &copy; OpenStreetMap contributors and &copy; CARTO; satellite imagery &copy; Esri. Markers with a street address are placed at that address; markers for future or designated sites are placed at the corner or block the City describes and are approximate. Designated school sites are lands reserved on the City's map &mdash; final confirmation depends on the school boards and Ministry of Education funding, and a school may be built years after homes are occupied, or may not proceed. All plans, dates, and projects are subject to change &mdash; verify before making decisions.</p>
 <div class="brand-foot">World Class Service &middot; World Class Results<br>Team Rajpal &middot; Re/Max Key2 Real Estate, Brokerage &middot; Seaton, Pickering, Ontario</div>
 </div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -249,11 +249,12 @@ const places = [
 ];
 </script>
 <script>
-const map = L.map('map', { scrollWheelZoom:false }).setView([43.8955, -79.1150], 12);
-const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-  maxZoom:19, attribution:'&copy; OpenStreetMap contributors'}).addTo(map);
+const map = L.map('map', { scrollWheelZoom:false, zoomSnap:0.25 }).setView([43.8930, -79.1130], 13);
+const osm = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{
+  maxZoom:20, detectRetina:true,
+  attribution:'&copy; OpenStreetMap contributors &copy; CARTO'}).addTo(map);
 const sat = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{
-  maxZoom:19, attribution:'Imagery &copy; Esri'});
+  maxZoom:19, detectRetina:true, attribution:'Imagery &copy; Esri'});
 L.control.layers({ "Map":osm, "Satellite":sat }, null, {position:'topright'}).addTo(map);
 map.on('click', ()=>{});
 
@@ -281,7 +282,13 @@ places.forEach(p => {
   m.addTo(group);
   markers[p.id] = { marker:m, data:p };
 });
-map.fitBounds(group.getBounds().pad(0.06));
+const OUTLIERS = ['greenriver','trail_s','phcc','seatoncentre','c_mainstreet','trail_n'];
+function coreBounds(list){
+  const core = list.filter(p => OUTLIERS.indexOf(p.id) === -1);
+  const use = core.length ? core : list;
+  return L.latLngBounds(use.map(p => [p.lat, p.lng]));
+}
+map.fitBounds(coreBounds(places).pad(0.10), { maxZoom:14 });
 
 function select(id){
   const p = markers[id].data;
@@ -306,7 +313,8 @@ document.getElementById('filters').addEventListener('click', e => {
   places.forEach(p => {
     if(f==='all' || p.cat===f){ markers[p.id].marker.addTo(group); shown.push(markers[p.id].marker); }
   });
-  if(shown.length){ map.fitBounds(L.featureGroup(shown).getBounds().pad(0.08)); }
+  const vis = places.filter(p => f==='all' || p.cat===f);
+  if(vis.length){ map.fitBounds(coreBounds(vis).pad(0.12), { maxZoom:14.5 }); }
 });
 
 const params = new URLSearchParams(window.location.search);
