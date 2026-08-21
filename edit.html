@@ -3,40 +3,47 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Marker editor — North Pickering Growth Map</title>
+<title>Marker editor</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <style>
 body{margin:0;font-family:-apple-system,'Segoe UI',Arial,sans-serif;background:#EEF1F4;color:#08172F;}
-header{background:#08172F;color:#fff;padding:14px 16px;border-bottom:3px solid #DC1C2E;}
-header h1{font-size:17px;margin:0 0 4px;}
-header p{font-size:13px;margin:0;color:#B9C4CC;line-height:1.45;}
-#map{height:62vh;width:100%;}
-.bar{display:flex;gap:8px;padding:10px 12px;background:#fff;border-bottom:1px solid #C7CCD3;flex-wrap:wrap;align-items:center;}
-select{flex:1;min-width:180px;padding:9px;font-size:14px;border:1px solid #C7CCD3;border-radius:4px;background:#fff;}
-button{padding:9px 14px;font-size:13px;border:0;border-radius:4px;background:#DC1C2E;color:#fff;font-weight:600;}
+header{background:#08172F;color:#fff;padding:12px 14px;border-bottom:3px solid #DC1C2E;}
+header h1{font-size:16px;margin:0 0 4px;}
+header p{font-size:12.5px;margin:0;color:#B9C4CC;line-height:1.4;}
+#map{height:60vh;width:100%;background:#dfe4e8;}
+.bar{display:flex;gap:8px;padding:10px;background:#fff;border-bottom:1px solid #C7CCD3;flex-wrap:wrap;align-items:center;}
+select{flex:1 1 100%;padding:9px;font-size:14px;border:1px solid #C7CCD3;border-radius:4px;background:#fff;}
+button{flex:1;padding:10px;font-size:13px;border:0;border-radius:4px;background:#DC1C2E;color:#fff;font-weight:600;}
 button.alt{background:#004D9A;}
-.status{padding:10px 14px;font-size:13px;line-height:1.5;background:#fff;border-top:1px solid #C7CCD3;}
-.moved{color:#0A7D2E;font-weight:600;}
-textarea{width:100%;height:150px;font-family:ui-monospace,Menlo,monospace;font-size:11px;padding:8px;border:1px solid #C7CCD3;border-radius:4px;}
-.mk{border-radius:50%;border:2.5px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.45);}
+button.gray{background:#55606B;}
+.status{padding:10px 12px;font-size:13px;background:#fff;border-top:1px solid #C7CCD3;}
+.ok{color:#0A7D2E;font-weight:600;}
+textarea{width:100%;height:130px;font-family:ui-monospace,Menlo,monospace;font-size:11px;padding:8px;border:1px solid #C7CCD3;border-radius:4px;box-sizing:border-box;}
+.mk{border-radius:50%;border:2.5px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.45);box-sizing:border-box;}
 .mk.sel{border-color:#FFD400;border-width:4px;}
+#err{background:#FFE3E6;color:#A8121F;padding:10px 12px;font-size:12px;display:none;}
 </style>
 </head>
 <body>
 <header>
 <h1>Marker editor</h1>
-<p>Pick a marker below, then <strong>drag it</strong> to the right spot (or tap the map to move the selected one). Zoom in as far as you like. When you're done, tap <strong>Copy corrections</strong> and send me the text.</p>
+<p>Choose a marker, tap <b>Zoom to</b>, then drag it (or tap the map) to the right spot. Then <b>Copy corrections</b> and send me the text.</p>
 </header>
+<div id="err"></div>
 <div class="bar">
 <select id="picker"></select>
 <button class="alt" id="zoom">Zoom to</button>
+<button class="gray" id="wrong">Mark as "shouldn't exist"</button>
 <button id="copy">Copy corrections</button>
 </div>
 <div id="map"></div>
-<div class="status" id="status">Nothing moved yet.</div>
-<div class="status"><textarea id="out" readonly placeholder="Corrections will appear here"></textarea></div>
+<div class="status" id="status">Nothing changed yet.</div>
+<div class="status"><textarea id="out" readonly placeholder="Your corrections appear here"></textarea></div>
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
+window.onerror=function(m){var e=document.getElementById('err');e.style.display='block';e.textContent='Error: '+m;};
+const SCH = "";
 const places = [
 // ---------- SCHOOLS ----------
 {id:"ddsb",lat:43.8728,lng:-79.1204,cat:"school",status:"open",name:"Josiah Henson Public School",
@@ -140,37 +147,58 @@ const places = [
 {id:"c_mainstreet",lat:43.8680,lng:-79.0950,cat:"builder",status:"building",name:"Main Street Seaton &mdash; Duffin Heights",
  txt:"Worth knowing: this community carries the Seaton name but sits in Duffin Heights, not on the Seaton lands &mdash; a different neighbourhood with a different context. Approximate. Source: Team Rajpal Seaton Builder Guide."}
 ];
+</script>
+<script>
 const CATC={school:"#6B4FA1",park:"#3F7A38",rec:"#004D9A",shop:"#C1762E",care:"#0E7C86",transit:"#55606B",builder:"#DC1C2E"};
+const clean=s=>String(s).replace(/&mdash;/g,'-').replace(/&amp;/g,'&').replace(/&middot;/g,'.').replace(/&[a-z]+;/g,'');
 const map=L.map('map').setView([43.8930,-79.1130],13);
-L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{maxZoom:20,detectRetina:true,attribution:'&copy; OSM &copy; CARTO'}).addTo(map);
-L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,opacity:0}).addTo(map);
-const sat=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,detectRetina:true});
-L.control.layers({"Map":L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{maxZoom:20,detectRetina:true}).addTo(map),"Satellite":sat}).addTo(map);
+const base=L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{maxZoom:20,detectRetina:true,attribution:'&copy; OSM &copy; CARTO'}).addTo(map);
+const sat=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,detectRetina:true,attribution:'Esri'});
+L.control.layers({"Map":base,"Satellite":sat}).addTo(map);
+setTimeout(()=>map.invalidateSize(),300);
 
 const picker=document.getElementById('picker');
-const moved={}; let selected=null; const M={};
-const clean=s=>s.replace(/&mdash;/g,'-').replace(/&amp;/g,'&').replace(/&middot;/g,'.');
+const changes={}; const M={}; let selected=null;
 
-places.forEach(p=>{
+function icon(p,sel){return L.divIcon({className:'',html:'<div class="mk'+(sel?' sel':'')+'" style="width:20px;height:20px;background:'+(CATC[p.cat]||'#333')+'"></div>',iconSize:[20,20],iconAnchor:[10,10]});}
+
+places.forEach(function(p){
   const o=document.createElement('option'); o.value=p.id; o.textContent=clean(p.name); picker.appendChild(o);
   const m=L.marker([p.lat,p.lng],{draggable:true,icon:icon(p,false)}).addTo(map);
-  m.on('dragend',()=>{const ll=m.getLatLng();record(p,ll);});
-  m.on('click',()=>{picker.value=p.id;select(p.id);});
-  M[p.id]={m,p};
+  m.on('dragend',function(){ record(p, m.getLatLng()); });
+  m.on('click',function(){ picker.value=p.id; select(p.id); });
+  M[p.id]={m:m,p:p};
 });
-function icon(p,sel){return L.divIcon({className:'',html:'<div class="mk'+(sel?' sel':'')+'" style="width:20px;height:20px;background:'+CATC[p.cat]+'"></div>',iconSize:[20,20],iconAnchor:[10,10]});}
-function select(id){ if(selected&&M[selected])M[selected].m.setIcon(icon(M[selected].p,false)); selected=id; M[id].m.setIcon(icon(M[id].p,true)); }
-function record(p,ll){ moved[p.id]={name:clean(p.name),lat:+ll.lat.toFixed(6),lng:+ll.lng.toFixed(6)}; render(); }
-function render(){
-  const k=Object.keys(moved);
-  document.getElementById('status').innerHTML = k.length? '<span class="moved">'+k.length+' marker(s) moved.</span>' : 'Nothing moved yet.';
-  document.getElementById('out').value = k.map(id=>id+' | '+moved[id].name+' | '+moved[id].lat+', '+moved[id].lng).join('\n');
+
+function select(id){
+  if(selected&&M[selected]) M[selected].m.setIcon(icon(M[selected].p,false));
+  selected=id; M[id].m.setIcon(icon(M[id].p,true));
 }
-map.on('click',e=>{ if(selected){ M[selected].m.setLatLng(e.latlng); record(M[selected].p,e.latlng);} });
-document.getElementById('zoom').onclick=()=>{const id=picker.value;select(id);map.setView(M[id].m.getLatLng(),17);};
-picker.onchange=()=>select(picker.value);
-document.getElementById('copy').onclick=()=>{const t=document.getElementById('out');t.select();document.execCommand('copy');alert('Copied - paste it back to Claude.');};
-select(places[0].id);
+function record(p,ll){
+  changes[p.id]={name:clean(p.name), txt:clean(p.name)+' -> '+(+ll.lat.toFixed(6))+', '+(+ll.lng.toFixed(6))};
+  M[p.id].m.setLatLng(ll); render();
+}
+function render(){
+  const k=Object.keys(changes);
+  document.getElementById('status').innerHTML = k.length ? '<span class="ok">'+k.length+' change(s).</span>' : 'Nothing changed yet.';
+  document.getElementById('out').value = k.map(function(id){return id+' | '+changes[id].txt;}).join('\n');
+}
+map.on('click',function(e){ if(selected) record(M[selected].p, e.latlng); });
+document.getElementById('zoom').onclick=function(){ const id=picker.value; select(id); map.setView(M[id].m.getLatLng(),17); };
+document.getElementById('wrong').onclick=function(){
+  const id=picker.value; const p=M[id].p;
+  changes[id]={name:clean(p.name), txt:clean(p.name)+' -> DELETE (should not exist)'};
+  render();
+};
+picker.onchange=function(){ select(picker.value); };
+document.getElementById('copy').onclick=function(){
+  const t=document.getElementById('out');
+  t.removeAttribute('readonly'); t.select(); t.setSelectionRange(0,99999);
+  try{ document.execCommand('copy'); alert('Copied - paste it back to Claude.'); }
+  catch(err){ alert('Select the text in the box and copy it manually.'); }
+  t.setAttribute('readonly','readonly');
+};
+if(places.length) select(places[0].id);
 </script>
 </body>
 </html>
